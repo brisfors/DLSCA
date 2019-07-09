@@ -1,8 +1,5 @@
 # Don't track the content of these folders
-traces/attack/
-traces/training/
-results/pdfresults/
-results/npyresults/
 
+# File types to ignore
 *.npy
-*.m5
+*.pdf
