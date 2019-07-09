@@ -1,0 +1,8 @@
+# Don't track the content of these folders
+traces/attack/
+traces/training/
+results/pdfresults/
+results/npyresults/
+
+*.npy
+*.m5
