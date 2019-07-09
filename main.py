@@ -30,7 +30,7 @@ class WidgetGallery(QDialog):
 
         self.originalPalette = QApplication.palette()
         self.selectedString = "selected files:"         #String used to generate list of args for scripts
-        self.resize(600,400)                            #Application default resolution
+        self.resize(600,500)                            #Application default resolution
 
         # Initialize tab screen
         self.tabs = QTabWidget()
@@ -120,7 +120,7 @@ class WidgetGallery(QDialog):
         t2dropdownWidget = QWidget()
         t2dropdownLayout = QHBoxLayout()
         t2dropdown = QComboBox()
-        t2dropdown.addItem("option 1 tbd")
+        t2dropdown.addItem("Average Rank Test")
         t2dropdown.addItem("option 2 tbd")
         t2dropdown.addItem("option 3 tbd")
         t2dropdownh = QPushButton("?")
@@ -131,25 +131,77 @@ class WidgetGallery(QDialog):
 
 #SELECTION GROUP 1
         t2Group1 = QWidget()
+        t2Group1Layout = QVBoxLayout()
+
+        t2interval = QWidget()
+        t2intervalLayout = QHBoxLayout()        
+        traceInterval = QLineEdit('57:153')
+        traceIntervalh = QPushButton("?")
+        t2intervalLayout.addWidget(traceInterval, 40)
+        t2intervalLayout.addWidget(traceIntervalh, 1)
+        t2interval.setLayout(t2intervalLayout)
+        t2Group1Layout.addWidget(t2interval)
+
+        t2keybyte = QWidget()
+        t2keybyteLayout = QHBoxLayout()
+        keybytePos = QComboBox()
+#        keybytePos.addItem("Select Keybyte Position")
+        keybytePos.addItem("0")
+        keybytePos.addItem("1")
+        keybytePos.addItem("2")
+        keybytePos.addItem("3")
+        keybytePos.addItem("4")
+        keybytePos.addItem("5")
+        keybytePos.addItem("6")
+        keybytePos.addItem("7")
+        keybytePos.addItem("8")
+        keybytePos.addItem("9")
+        keybytePos.addItem("A")
+        keybytePos.addItem("B")
+        keybytePos.addItem("C")
+        keybytePos.addItem("D")
+        keybytePos.addItem("E")
+        keybytePos.addItem("F")
+        keybytePosh = QPushButton("?")
+        t2keybyteLayout.addWidget(keybytePos, 40)
+        t2keybyteLayout.addWidget(keybytePosh, 1)
+        t2keybyte.setLayout(t2keybyteLayout)
+        t2Group1Layout.addWidget(t2keybyte)
+
+        t2iter = QWidget()
+        t2iterLayout = QHBoxLayout()        
+        numiter = QLineEdit('1000')
+        numiterh = QPushButton("?")
+        t2iterLayout.addWidget(numiter, 40)
+        t2iterLayout.addWidget(numiterh, 1)
+        t2iter.setLayout(t2iterLayout)
+        t2Group1Layout.addWidget(t2iter)
+
+        t2art = QWidget()
+        t2artLayout = QHBoxLayout()
+        art = QPushButton("run average rank test")
+        arth = QPushButton("?")
+        t2artLayout.addWidget(art, 40)
+        t2artLayout.addWidget(arth, 1)
+        t2art.setLayout(t2artLayout)
+        t2Group1Layout.addWidget(t2art)
+
+        t2Group1.setLayout(t2Group1Layout)
+        t2lLayout.addWidget(t2Group1)
+        self.tab2.setLayout(t2lLayout)
+
+
+#SELECTION GROUP 2
+        t2Group2 = QWidget()
         t2ConfirmLayout = QHBoxLayout()
         tab2Confirm = QPushButton("Confirm")
         tab2Confirmh = QPushButton("?")
         t2ConfirmLayout.addWidget(tab2Confirm, 40)
         t2ConfirmLayout.addWidget(tab2Confirmh, 1)
-        t2Group1.setLayout(t2ConfirmLayout)
-        t2lLayout.addWidget(t2Group1)
-
-#SELECTION GROUP 2
-        t2Group2 = QWidget()
-        t2s1Layout = QHBoxLayout()
-        tab2Script1 = QPushButton("average rank test")
-        tab2Script1h = QPushButton("?")
-        t2s1Layout.addWidget(tab2Script1, 40)
-        t2s1Layout.addWidget(tab2Script1h, 1)
-        t2Group2.setLayout(t2s1Layout)
+        t2Group2.setLayout(t2ConfirmLayout)
         t2Group2.hide()
         t2lLayout.addWidget(t2Group2)
-        self.tab2.setLayout(t2lLayout)
+
 
 #SELECTION GROUP 3
         t2Group3 = QWidget()
@@ -177,12 +229,24 @@ class WidgetGallery(QDialog):
                 info = "Use the dropdown menu to select which script to run on the selected files. It is up to you as the user to not make a mistake..."
                 self.updateInfo(info,self.tabs.currentIndex())
 
-        def script1info():
+        def artinfo():
                 info = "Average rank test for selected models. More info to come."
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def confirminfo():
                 info = "Placeholder."
+                self.updateInfo(info,self.tabs.currentIndex())
+
+        def intervalinfo():
+                info = "Set the interval for the first keybyte position to correspond to your model's input size. Subsequent keybytes will be calculated from this."
+                self.updateInfo(info,self.tabs.currentIndex())
+
+        def keybyteinfo():
+                info = "select which keybyte position to attack using selected models. Best success is typically attacking the same position as trained on."
+                self.updateInfo(info,self.tabs.currentIndex())
+
+        def iterinfo():
+                info = "set the number of test iterations to run for your average results. I recommend 100 for fast testing and 1000 for presentable results."
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def textchanget2():
@@ -223,10 +287,14 @@ class WidgetGallery(QDialog):
         t2dropdownh.clicked.connect(dropdowninfo)
         tab2Confirm.clicked.connect(clickedConfirm)
         tab2Confirmh.clicked.connect(confirminfo)
-        tab2Script1.clicked.connect(avgrank)
-        tab2Script1h.clicked.connect(script1info)
+        traceIntervalh.clicked.connect(intervalinfo)
+        keybytePosh.clicked.connect(keybyteinfo)
+        numiterh.clicked.connect(iterinfo)
+        art.clicked.connect(avgrank)
+        arth.clicked.connect(artinfo)
         self.tab2.textEdit.textChanged.connect(textchanget2)
         t2dropdown.currentIndexChanged.connect(selection)
+
 
 
     def createT3L(self):
@@ -255,9 +323,11 @@ class WidgetGallery(QDialog):
         t3dropdownWidget = QWidget()
         t3dropdownLayout = QHBoxLayout()
         t3dropdown = QComboBox()
-        t3dropdown.addItem("option 1 tbd")
-        t3dropdown.addItem("option 2 tbd")
-        t3dropdown.addItem("option 3 tbd")
+        t3dropdown.addItem("Unzip .tar.zip traces")        
+        t3dropdown.addItem("Model Input Shape (WIP)")
+        t3dropdown.addItem("Model Summary (WIP)")
+        t3dropdown.addItem("Plot History Files")
+        t3dropdown.addItem("Plot a trace (WIP)")
         t3dropdownh = QPushButton("?")
         t3dropdownLayout.addWidget(t3dropdown, 40)
         t3dropdownLayout.addWidget(t3dropdownh, 1)
@@ -266,35 +336,57 @@ class WidgetGallery(QDialog):
 
 #SELECTION GROUP 1
         t3Group1 = QWidget()
-        t3ConfirmLayout = QHBoxLayout()
-        tab3Confirm = QPushButton("Confirm")
-        tab3Confirmh = QPushButton("?")
-        t3ConfirmLayout.addWidget(tab3Confirm, 40)
-        t3ConfirmLayout.addWidget(tab3Confirmh, 1)
-        t3Group1.setLayout(t3ConfirmLayout)
+        unzipperLayout = QHBoxLayout()
+        unzipper = QPushButton("Unzip")
+        unzipperh = QPushButton("?")
+        unzipperLayout.addWidget(unzipper, 40)
+        unzipperLayout.addWidget(unzipperh, 1)
+        t3Group1.setLayout(unzipperLayout)
         t3lLayout.addWidget(t3Group1)
 
 #SELECTION GROUP 2
         t3Group2 = QWidget()
-        t3s1Layout = QHBoxLayout()
-        tab3Script1 = QPushButton("Printer.py")
-        tab3Script1h = QPushButton("?")
-        t3s1Layout.addWidget(tab3Script1, 40)
-        t3s1Layout.addWidget(tab3Script1h, 1)
-        t3Group2.setLayout(t3s1Layout)
+        inputShapeLayout = QHBoxLayout()
+        inShape = QPushButton("Print Model Input Shapes")
+        inShapeh = QPushButton("?")
+        inputShapeLayout.addWidget(inShape, 40)
+        inputShapeLayout.addWidget(inShapeh, 1)
+        t3Group2.setLayout(inputShapeLayout)
         t3Group2.hide()
         t3lLayout.addWidget(t3Group2)
 
 #SELECTION GROUP 3
         t3Group3 = QWidget()
-        t3HideLayout = QHBoxLayout()
-        tab3Hide = QPushButton("Hide widgets")
-        tab3Hideh = QPushButton("?")
-        t3HideLayout.addWidget(tab3Hide, 40)
-        t3HideLayout.addWidget(tab3Hideh, 1)
-        t3Group3.setLayout(t3HideLayout)
+        summaryLayout = QHBoxLayout()
+        modelSummary = QPushButton("Print Model Summary")
+        modelSummaryh = QPushButton("?")
+        summaryLayout.addWidget(modelSummary, 40)
+        summaryLayout.addWidget(modelSummaryh, 1)
+        t3Group3.setLayout(summaryLayout)
         t3Group3.hide()
         t3lLayout.addWidget(t3Group3)
+
+#SELECTION GROUP 4
+        t3Group4 = QWidget()
+        historyLayout = QHBoxLayout()
+        plotHistory = QPushButton("Plot History Files")
+        plotHistoryh = QPushButton("?")
+        historyLayout.addWidget(plotHistory, 40)
+        historyLayout.addWidget(plotHistoryh, 1)
+        t3Group4.setLayout(historyLayout)
+        t3Group4.hide()
+        t3lLayout.addWidget(t3Group4)
+
+#SELECTION GROUP 5
+        t3Group5 = QWidget()
+        traceLayout = QHBoxLayout()
+        plotTrace = QPushButton("Plot Trace")
+        plotTraceh = QPushButton("?")
+        traceLayout.addWidget(plotTrace, 40)
+        traceLayout.addWidget(plotTraceh, 1)
+        t3Group5.setLayout(traceLayout)
+        t3Group5.hide()
+        t3lLayout.addWidget(t3Group5)
 
         self.tab3.setLayout(t3lLayout)
 
@@ -317,8 +409,24 @@ class WidgetGallery(QDialog):
                 info = "Use the dropdown menu to select which script to run on the selected files. It is up to you as the user to not make a mistake..."
                 self.updateInfo(info,self.tabs.currentIndex())
 
-        def script1info():
-                info = "Placeholder for a util script. Currently just prints arguments being sent."
+        def unzipperinfo():
+                info = "SEBASTIAN WRITE YOUR INFOR HERE!!!"
+                self.updateInfo(info,self.tabs.currentIndex())
+
+        def inshapeinfo():
+                info = "(WIP) A script for printing the input shape of all models selected."
+                self.updateInfo(info,self.tabs.currentIndex())
+
+        def summaryinfo():
+                info = "(WIP) A script for printing the model summary of all models selected."
+                self.updateInfo(info,self.tabs.currentIndex())
+
+        def historyinfo():
+                info = "(WIP) A script for plotting all selected history files from trained models."
+                self.updateInfo(info,self.tabs.currentIndex())
+
+        def traceinfo():
+                info = "(WIP) A script for plotting a randomly selected trace from each selected trace file. Make sure to only select trace files for this."
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def clickedConfirm():
@@ -333,23 +441,48 @@ class WidgetGallery(QDialog):
                 t3Group1.show()
                 t3Group2.hide()
                 t3Group3.hide()
+                t3Group4.hide()
+                t3Group5.hide()
 
             if i == 1:
                 t3Group1.hide()
                 t3Group2.show()
                 t3Group3.hide()
+                t3Group4.hide()
+                t3Group5.hide()
 
             if i == 2:
                 t3Group1.hide()
                 t3Group2.hide()
                 t3Group3.show()
+                t3Group4.hide()
+                t3Group5.hide()
+
+            if i == 3:
+                t3Group1.hide()
+                t3Group2.hide()
+                t3Group3.hide()
+                t3Group4.show()
+                t3Group5.hide()
+
+            if i == 4:
+                t3Group1.hide()
+                t3Group2.hide()
+                t3Group3.hide()
+                t3Group4.hide()
+                t3Group5.show()
+
 
         tab3Button1.clicked.connect(clickedt3b1)  
         tab3Button1h.clicked.connect(filebrowserinfo)
         t3dropdownh.clicked.connect(dropdowninfo)  
-        tab3Confirm.clicked.connect(clickedConfirm)
-        tab3Script1.clicked.connect(script1)
-        tab3Script1h.clicked.connect(script1info)
+        unzipper.clicked.connect(clickedConfirm)
+        unzipperh.clicked.connect(unzipperinfo)
+        inShape.clicked.connect(script1)
+        inShapeh.clicked.connect(inshapeinfo)
+        modelSummaryh.clicked.connect(summaryinfo)
+        plotHistoryh.clicked.connect(historyinfo)
+        plotTraceh.clicked.connect(traceinfo)
         tab3Texth.clicked.connect(selectedinfo)
         self.tab3.textEdit.textChanged.connect(textchanget3)
         t3dropdown.currentIndexChanged.connect(selection)
