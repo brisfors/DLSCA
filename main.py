@@ -280,6 +280,8 @@ class WidgetGallery(QDialog):
                 alert.exec_()
                 ptfile = self.openTracesDialog()
                 if not ptfile: return
+                alert.setText("currently the key is hardcoded to be [ 26, 206, 149, 113, 251,  46,  52, 156,   5, 162, 215,  87,  29, 47, 187, 236]. This may be changed to loading a key file instead in the future")
+                alert.exec_()
                 models = self.splitter(self.selectedString)
                 subprocess.call(['python', 'scripts/average_rank_test.py', str(traces), str(iterations), str(tracestart), str(traceend), str(keybytepos), tracefile, ptfile] + models[1:])
 
@@ -347,7 +349,7 @@ class WidgetGallery(QDialog):
         t3dropdown.addItem("Model Input Shape")
         t3dropdown.addItem("Model Summary")
         t3dropdown.addItem("Plot History Files")
-        t3dropdown.addItem("Plot a trace (WIP)")
+        t3dropdown.addItem("Plot a trace")
         t3dropdownh = QPushButton("?")
         t3dropdownLayout.addWidget(t3dropdown, 40)
         t3dropdownLayout.addWidget(t3dropdownh, 1)
@@ -442,11 +444,11 @@ class WidgetGallery(QDialog):
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def historyinfo():
-                info = "(WIP) A script for plotting all selected history files from trained models. These should be .npz files."
+                info = "A script for plotting all selected history files from trained models. These should be .npz files."
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def traceinfo():
-                info = "(WIP) A script for plotting a randomly selected trace from each selected trace file. Make sure to only select trace files for this."
+                info = "A script for plotting a randomly selected trace from each selected trace file. Make sure to only select trace files for this."
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def clickedConfirm():
@@ -463,6 +465,10 @@ class WidgetGallery(QDialog):
         def historyplotter():
                 args = self.splitter(self.selectedString)
                 subprocess.call(['python', 'scripts/plot_history.py'] + args[1:])
+
+        def traceplot():
+                args = self.splitter(self.selectedString)
+                subprocess.call(['python', 'scripts/trace_plotter.py'] + args[1:])
 
         def selection(i):
             if i == 0:
@@ -512,6 +518,7 @@ class WidgetGallery(QDialog):
         modelSummary.clicked.connect(summary)
         modelSummaryh.clicked.connect(summaryinfo)
         plotHistoryh.clicked.connect(historyinfo)
+        plotTrace.clicked.connect(traceplot)
         plotTraceh.clicked.connect(traceinfo)
         tab3Texth.clicked.connect(selectedinfo)
         self.tab3.textEdit.textChanged.connect(textchanget3)
