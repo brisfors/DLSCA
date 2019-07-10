@@ -210,6 +210,9 @@ tracestart = 57
 traceend = 153
 keybytepos = 0
 
+for i in sys.argv:
+	print(i)
+
 if len(sys.argv) >= 3:
 	numtraces = int(sys.argv[1])
 	numiter = int(sys.argv[2])

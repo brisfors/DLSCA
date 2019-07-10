@@ -263,8 +263,23 @@ class WidgetGallery(QDialog):
                  print(self.selectedString)
 
         def avgrank():
-                args = self.splitter(self.selectedString)
-                subprocess.call(['python', 'scripts/average_rank_test.py'] + args[1:])
+                traces = numtraces.text()
+                iterations = numiter.text()
+                interval = traceInterval.text()
+                tracestart = re.search('(\d+):(\d+)', interval).group(1)
+                traceend = re.search('(\d+):(\d+)', interval).group(2)
+                keybytepos = keybytePos.currentIndex()
+                alert = QMessageBox()
+                alert.setText("choose trace file")
+                alert.exec_()
+                tracefile = self.openTracesDialog()
+                if not tracefile: return
+                alert.setText("choose plaintext file")
+                alert.exec_()
+                ptfile = self.openTracesDialog()
+                if not ptfile: return
+                models = self.splitter(self.selectedString)
+                subprocess.call(['python', 'scripts/average_rank_test.py', str(traces), str(iterations), str(tracestart), str(traceend), str(keybytepos), tracefile, ptfile] + models[1:])
 
         def selection(i):
             if i == 0:
@@ -600,6 +615,15 @@ class WidgetGallery(QDialog):
             for i in files:
               temp = temp + "\n" + i
             self.updateSelected(temp)
+
+    def openTracesDialog(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getOpenFileName(self,"QFileDialog.getOpenFileName()", "","Numpy Arrays (*.npy)", options=options)
+        if fileName:
+            return fileName
+        else:
+            return False
 
 #Updates and synchronizes the loaded file lists on t2 and t3. 
 #The conditionals prevent infinite recursion.
