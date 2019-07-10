@@ -1,3 +1,4 @@
+import re
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
@@ -27,9 +28,11 @@ for name in namelist:
 for i in range(len(namelist)):
   plt.xlabel('epoch')
   plt.ylabel('validation accuracy')
-  plt.title('val_acc for ' + namelist[i][:-4])
+  filename =re.search('([^/\s]+)([\s]?)+$', namelist[i]).group(1)
+  filename = filename[:-11]
+  plt.title('val_acc for ' + filename)
   plt.plot(plotlist[len(plotlist)-i -1])
-  plt.savefig(namelist[i][:-4] + '.pdf')
+  plt.savefig('history/' + filename + '.pdf')
   plt.show()
 
 

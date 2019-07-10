@@ -157,7 +157,7 @@ def check_model(model_file, traces, plaintexts, num_traces=50, numiter=100, inte
 	plt.xlabel('number of traces')
 	plt.ylabel('rank')
 	plt.plot(x, y)
-	filename = re.search('([^/]+$)', model_file).group(0)
+	filename = re.search('([^/]+$)', model_file).group(0)[:-3]
 	npyfile = 'results/npyresults/' + filename + '_average_rank.npy'
 	np.save(npyfile, results)
 	filename = 'results/pdfresults/' + filename+ '_average_rank.pdf'

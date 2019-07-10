@@ -72,12 +72,14 @@ class WidgetGallery(QDialog):
                 for i in sys.argv[2:]:
                     temp = temp + "\n" + i
                 self.updateSelected(temp)
-        elif len(sys.argv)>1:
-            self.tabs.setCurrentIndex(1)
-            temp = self.selectedString
-            for i in sys.argv[1:]:
-                temp = temp + "\n" + i
-            self.updateSelected(temp)                
+                          
+        if len(sys.argv)>1: 
+            if sys.argv[1] not in ['-u', '-t']:
+                self.tabs.setCurrentIndex(1)
+                temp = self.selectedString
+                for i in sys.argv[1:]:
+                    temp = temp + "\n" + i
+                self.updateSelected(temp) 
 
 #Naming convention atm: T = tab, #X = index starting from 1, L = left side
 #So if something is createT1L it means create the left side of tab1...
