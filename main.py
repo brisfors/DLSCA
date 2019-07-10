@@ -273,7 +273,7 @@ class WidgetGallery(QDialog):
                 alert.setText("choose trace file")
                 alert.exec_()
                 tracefile = self.openTracesDialog()
-                if not tracefile: return
+                if not tracefile: returng
                 alert.setText("choose plaintext file")
                 alert.exec_()
                 ptfile = self.openTracesDialog()
@@ -342,8 +342,8 @@ class WidgetGallery(QDialog):
         t3dropdownLayout = QHBoxLayout()
         t3dropdown = QComboBox()
         t3dropdown.addItem("Unzip .tar.zip traces")        
-        t3dropdown.addItem("Model Input Shape (WIP)")
-        t3dropdown.addItem("Model Summary (WIP)")
+        t3dropdown.addItem("Model Input Shape")
+        t3dropdown.addItem("Model Summary")
         t3dropdown.addItem("Plot History Files")
         t3dropdown.addItem("Plot a trace (WIP)")
         t3dropdownh = QPushButton("?")
@@ -432,11 +432,11 @@ class WidgetGallery(QDialog):
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def inshapeinfo():
-                info = "(WIP) A script for printing the input shape of all models selected."
+                info = "A script for printing the input shape of all models selected."
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def summaryinfo():
-                info = "(WIP) A script for printing the model summary of all models selected."
+                info = "A script for printing the model summary of all models selected."
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def historyinfo():
@@ -450,9 +450,13 @@ class WidgetGallery(QDialog):
         def clickedConfirm():
                  print(self.selectedString)
 
-        def script1():
+        def summary():
                  args = self.splitter(self.selectedString)
-                 subprocess.call(['python', 'scripts/printer.py'] + args[1:])
+                 subprocess.call(['python', 'scripts/model_summary.py'] + args[1:])
+
+        def inputshape():
+                 args = self.splitter(self.selectedString)
+                 subprocess.call(['python', 'scripts/input_shape.py'] + args[1:])
 
         def historyplotter():
                 args = self.splitter(self.selectedString)
@@ -501,8 +505,9 @@ class WidgetGallery(QDialog):
         t3dropdownh.clicked.connect(dropdowninfo)  
         unzipper.clicked.connect(clickedConfirm)
         unzipperh.clicked.connect(unzipperinfo)
-        inShape.clicked.connect(script1)
+        inShape.clicked.connect(inputshape)
         inShapeh.clicked.connect(inshapeinfo)
+        modelSummary.clicked.connect(summary)
         modelSummaryh.clicked.connect(summaryinfo)
         plotHistoryh.clicked.connect(historyinfo)
         plotTraceh.clicked.connect(traceinfo)
