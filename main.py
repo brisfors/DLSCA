@@ -170,9 +170,11 @@ class WidgetGallery(QDialog):
         t2Group1Layout.addWidget(t2keybyte)
 
         t2iter = QWidget()
-        t2iterLayout = QHBoxLayout()        
-        numiter = QLineEdit('1000')
+        t2iterLayout = QHBoxLayout()
+        numtraces = QLineEdit('50')        
+        numiter = QLineEdit('100')
         numiterh = QPushButton("?")
+        t2iterLayout.addWidget(numtraces, 40)
         t2iterLayout.addWidget(numiter, 40)
         t2iterLayout.addWidget(numiterh, 1)
         t2iter.setLayout(t2iterLayout)
@@ -247,7 +249,7 @@ class WidgetGallery(QDialog):
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def iterinfo():
-                info = "set the number of test iterations to run for your average results. I recommend 100 for fast testing and 1000 for presentable results."
+                info = "set the number of traces to plot and the number of test iterations to run for your average results. I recommend leaving them on default while trying to improve models."
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def textchanget2():

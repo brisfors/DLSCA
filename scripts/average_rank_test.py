@@ -135,21 +135,21 @@ def full_ranks(model, input_data, plaintext, min_trace_idx, max_trace_idx, rank_
 #
 #plots are saved and raw data is saved.
 
-def check_model(model_file, traces, plaintexts, num_traces=50, numiter=1000):
+
+
+def check_model(model_file, traces, plaintexts, num_traces=50, numiter=100, interval = slice(57,153), keybyte = 0):
 	model = load_model(model_file)
 	results = np.zeros((numiter, num_traces-1, 2))
-#	input_data = np.load('traces/X1B_attack/xmega1B_EM_attack_traces.npy')
 	input_data = traces
-	input_data = input_data[:,57:152]
-#	plaintext = np.load('traces/X1B_attack/xmega1B_EM_attack_textin.npy')
-	plaintext = plaintexts[:,0]
+	input_data = input_data[:,interval]
+	plaintext = plaintexts[:,keybyte]
 	print(input_data.shape, ' = trace shape')
 	print(plaintext.shape, ' = pt shape')
 	for i in range(numiter):
 		permutation = np.random.permutation(traces.shape[0])
 		input_data = input_data[permutation,:]
 		plaintext = plaintext[permutation]
-		ranks = full_ranks(model, input_data[:50,:], plaintext[:50], 0, num_traces, 1)
+		ranks = full_ranks(model, input_data[:num_traces,:], plaintext[:num_traces], 0, num_traces, 1)
 		results[i] = ranks
 	x = [ranks[i][0] for i in range(0, ranks.shape[0])]
 	y = [np.mean(results, axis = 0)[i][1] for i in range(0, ranks.shape[0])]
@@ -202,17 +202,29 @@ def load_traces(tracepath, ptpath):
 #EM_test2.h5. Useful for when training many models
 #and you wish to only test the newest ones.
 
-tracefolder = 'traces/attack/'
-test_traces, test_pt = load_traces(tracefolder + 'x2_fixedKey_10k_traces.npy', 
-			tracefolder + 'x2_fixedKey_10k_plaintext.npy')
 
 to_check_all = []
+numtraces = 50
+numiter = 100
+tracestart = 57
+traceend = 153
+keybytepos = 0
 
-if len(sys.argv) >= 2:
-	to_check_all = [i for i in sys.argv][1:]
+if len(sys.argv) >= 3:
+	numtraces = int(sys.argv[1])
+	numiter = int(sys.argv[2])
+	tracestart = int(sys.argv[3])
+	traceend = int(sys.argv[4])
+	keybytepos = int(sys.argv[5])
+	tracefile = sys.argv[6]
+	ptfile = sys.argv[7]
+	to_check_all = [i for i in sys.argv][8:]
+
+test_traces, test_pt = load_traces(tracefile, ptfile)
+interval = slice(tracestart+96*keybytepos, traceend+96*keybytepos)
 
 for (m) in to_check_all:
-	check_model(m, test_traces, test_pt, num_traces = 50, numiter = 100)
+	check_model(m, test_traces, test_pt, numtraces, numiter, interval, keybytepos)
 
 
 try:
