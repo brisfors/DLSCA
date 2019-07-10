@@ -42,11 +42,11 @@ AES_Sbox = np.array([
 #I leave some of their comments in here. But to summarize what the method does:
 #it is a cumulative sum of log predictions for each possible keybyte value. We compare the sorted
 #list of these predictions with the de facto real answer to find the rank of the real key value.
-def rank(predictions, data, plaintext, min_trace_idx, max_trace_idx, last_key_bytes_proba):
-	keyarray = [ 43, 126,  21,  22,  40, 174, 210, 166, 171, 247,  21, 136,   9, 207,  79,  60]
-	real_key = keyarray[0]
+def rank(predictions, data, plaintext, min_trace_idx, max_trace_idx, last_key_bytes_proba, keybytePos = 0):
+#	keyarray = [ 43, 126,  21,  22,  40, 174, 210, 166, 171, 247,  21, 136,   9, 207,  79,  60]
+#	real_key = keyarray[0]
 	keyarray2 = [ 26, 206, 149, 113, 251,  46,  52, 156,   5, 162, 215,  87,  29, 47, 187, 236]
-	real_key = keyarray2[0]
+	real_key = keyarray2[keybytePos]
 
 	if len(last_key_bytes_proba) == 0:
 		# If this is the first rank we compute, initialize all the estimates to zero
@@ -89,13 +89,13 @@ def rank(predictions, data, plaintext, min_trace_idx, max_trace_idx, last_key_by
 #
 #Basically what this does is it calculates the rank progression in batches. We set the batch size to 1. Then it returns
 #an array with the rank progression.
-def full_ranks(model, input_data, plaintext, min_trace_idx, max_trace_idx, rank_step):
+def full_ranks(model, input_data, plaintext, min_trace_idx, max_trace_idx, rank_step, keybytePos = 0):
 	predictions = model.predict(input_data)
 	index = np.arange(min_trace_idx+rank_step, max_trace_idx, rank_step)
 	f_ranks = np.zeros((len(index), 2), dtype=np.uint32)
 	key_bytes_proba = []
 	for t, i in zip(index, range(0, len(index))):
-		real_key_rank, key_bytes_proba = rank(predictions[t-rank_step:t], input_data, plaintext[t-rank_step:t], t-rank_step, t, key_bytes_proba)
+		real_key_rank, key_bytes_proba = rank(predictions[t-rank_step:t], input_data, plaintext[t-rank_step:t], t-rank_step, t, key_bytes_proba, keybytePos)
 		f_ranks[i] = [t - min_trace_idx, real_key_rank]
 	return f_ranks
 
@@ -149,7 +149,7 @@ def check_model(model_file, traces, plaintexts, num_traces=50, numiter=100, inte
 		permutation = np.random.permutation(traces.shape[0])
 		input_data = input_data[permutation,:]
 		plaintext = plaintext[permutation]
-		ranks = full_ranks(model, input_data[:num_traces,:], plaintext[:num_traces], 0, num_traces, 1)
+		ranks = full_ranks(model, input_data[:num_traces,:], plaintext[:num_traces], 0, num_traces, 1, keybyte)
 		results[i] = ranks
 	x = [ranks[i][0] for i in range(0, ranks.shape[0])]
 	y = [np.mean(results, axis = 0)[i][1] for i in range(0, ranks.shape[0])]
@@ -209,9 +209,6 @@ numiter = 100
 tracestart = 57
 traceend = 153
 keybytepos = 0
-
-for i in sys.argv:
-	print(i)
 
 if len(sys.argv) >= 3:
 	numtraces = int(sys.argv[1])
