@@ -1,3 +1,4 @@
+import re
 import os.path
 import sys
 import h5py
@@ -6,7 +7,6 @@ import matplotlib.pyplot as plt
 from keras.models import load_model
 from keras.losses import categorical_crossentropy
 import tensorflow as tf
-modelName = 'CW_validation.h5'
 
 ############################################################################################################
 #													   #
@@ -157,11 +157,10 @@ def check_model(model_file, traces, plaintexts, num_traces=50, numiter=1000):
 	plt.xlabel('number of traces')
 	plt.ylabel('rank')
 	plt.plot(x, y)
-	print(model_file)
-	cutfilename = model_file[14:]
-	npyfile = 'results/npyresults/' + cutfilename + '_average_rank.npy'
+	filename = re.search('([^/]+$)', model_file).group(0)
+	npyfile = 'results/npyresults/' + filename + '_average_rank.npy'
 	np.save(npyfile, results)
-	filename = 'results/pdfresults/' + cutfilename+ '_average_rank.pdf'
+	filename = 'results/pdfresults/' + filename+ '_average_rank.pdf'
 	plt.savefig(filename)
 	plt.show(block=False)
 	plt.figure()

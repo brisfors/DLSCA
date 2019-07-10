@@ -20,6 +20,7 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon
 import subprocess
+import re
 
 #TO_REMOVE
 globalIP = '0.0.0.0'
@@ -422,7 +423,7 @@ class WidgetGallery(QDialog):
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def historyinfo():
-                info = "(WIP) A script for plotting all selected history files from trained models."
+                info = "(WIP) A script for plotting all selected history files from trained models. These should be .npz files."
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def traceinfo():
@@ -435,6 +436,10 @@ class WidgetGallery(QDialog):
         def script1():
                  args = self.splitter(self.selectedString)
                  subprocess.call(['python', 'scripts/printer.py'] + args[1:])
+
+        def historyplotter():
+                args = self.splitter(self.selectedString)
+                subprocess.call(['python', 'scripts/plot_history.py'] + args[1:])
 
         def selection(i):
             if i == 0:
@@ -475,6 +480,7 @@ class WidgetGallery(QDialog):
 
         tab3Button1.clicked.connect(clickedt3b1)  
         tab3Button1h.clicked.connect(filebrowserinfo)
+        plotHistory.clicked.connect(historyplotter)
         t3dropdownh.clicked.connect(dropdowninfo)  
         unzipper.clicked.connect(clickedConfirm)
         unzipperh.clicked.connect(unzipperinfo)
@@ -586,7 +592,7 @@ class WidgetGallery(QDialog):
     def openFileNamesDialog(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        files, _ = QFileDialog.getOpenFileNames(self,"QFileDialog.getOpenFileNames()", "","All Files (*);;Model Files (*.h5);;Numpy Arrays (*.npy)", options=options)
+        files, _ = QFileDialog.getOpenFileNames(self,"QFileDialog.getOpenFileNames()", "","All Files (*);;Model Files (*.h5);;Numpy Arrays (*.npy);;Numpy Zipfiles (*.npz)", options=options)
         if files:
             temp = self.selectedString
             for i in files:
