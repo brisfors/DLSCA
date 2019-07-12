@@ -5,8 +5,10 @@ I am making it public so it will be easier to share with my coworkers, who are t
 user friendly version of otherwise quite arcane scripts.
 
 Install instructions:
-1. Clone this repository
-2. conda install requests
-3. pip install pyqt5
-4. pip install fbs
-5. That's it! Just run "python main.py"
+1. conda create -n tensorflow_env python=3.6
+2. conda activate tensorflow_env
+3. conda install -c conda-forge tensorflow=1.12.0
+4. conda install keras
+5. pip install fbs
+6. Clone this repository
+7. That's it! Just run "python main.py"
