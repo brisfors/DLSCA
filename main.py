@@ -27,6 +27,15 @@ globalIP = '0.0.0.0'
 
 class WidgetGallery(QDialog):
     def __init__(self, parent=None):
+        
+        screen = app.primaryScreen()
+        self.screenSize = screen.size()
+        self.screenMode = 0
+        if self.screenSize.width()>1200: self.screenMode = 1
+        if self.screenSize.width()>1900: self.screenMode = 2
+        if self.screenSize.width()>2500: self.screenMode = 3
+        if self.screenSize.width()>3800: self.screenMode = 4
+
         super(WidgetGallery, self).__init__(parent)
 
         self.originalPalette = QApplication.palette()
@@ -674,7 +683,10 @@ class WidgetGallery(QDialog):
         t2Layout = QHBoxLayout()
         self.createT2L()
         self.createT2R()
-        self.T2R.setMaximumWidth(100)
+        if self.screenMode <4:
+            self.T2R.setMaximumWidth(100)
+        else: 
+            self.T2R.setMaximumWidth(300)
         t2Layout.addWidget(self.tab2)   
         t2Layout.addWidget(self.T2R)
         self.T2.setLayout(t2Layout)
@@ -684,7 +696,10 @@ class WidgetGallery(QDialog):
         t3Layout = QHBoxLayout()
         self.createT3L()
         self.createT3R()
-        self.T3R.setMaximumWidth(100)
+        if self.screenMode <4:
+            self.T3R.setMaximumWidth(100)
+        else: 
+            self.T3R.setMaximumWidth(300)
         t3Layout.addWidget(self.tab3)
         t3Layout.addWidget(self.T3R)
         self.T3.setLayout(t3Layout)
