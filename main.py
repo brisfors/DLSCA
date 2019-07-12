@@ -27,6 +27,15 @@ globalIP = '0.0.0.0'
 
 class WidgetGallery(QDialog):
     def __init__(self, parent=None):
+        
+        screen = app.primaryScreen()
+        self.screenSize = screen.size()
+        self.screenMode = 0
+        if self.screenSize.width()>1200: self.screenMode = 1
+        if self.screenSize.width()>1900: self.screenMode = 2
+        if self.screenSize.width()>2500: self.screenMode = 3
+        if self.screenSize.width()>3800: self.screenMode = 4
+
         super(WidgetGallery, self).__init__(parent)
 
         self.originalPalette = QApplication.palette()
