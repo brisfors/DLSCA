@@ -125,7 +125,7 @@ class WidgetGallery(QDialog):
         t2dropdown = QComboBox()
         t2dropdown.addItem("Average Rank Test")
         t2dropdown.addItem("First Trace Success Test")
-        t2dropdown.addItem("option 3 tbd")
+        t2dropdown.addItem("Whole Key Test")
         t2dropdownh = QPushButton("?")
         t2dropdownLayout.addWidget(t2dropdown, 40)
         t2dropdownLayout.addWidget(t2dropdownh, 1)
@@ -215,12 +215,12 @@ class WidgetGallery(QDialog):
 
 #SELECTION GROUP 3
         t2Group3 = QWidget()
-        t2HideLayout = QHBoxLayout()
-        tab2Hide = QPushButton("Hide")
-        tab2Hideh = QPushButton("?")
-        t2HideLayout.addWidget(tab2Hide, 40)
-        t2HideLayout.addWidget(tab2Hideh, 1)
-        t2Group3.setLayout(t2HideLayout)
+        t2fkLayout = QHBoxLayout()
+        tab2fk = QPushButton("run whole key test")
+        tab2fkh = QPushButton("?")
+        t2fkLayout.addWidget(tab2fk, 40)
+        t2fkLayout.addWidget(tab2fkh, 1)
+        t2Group3.setLayout(t2fkLayout)
         t2Group3.hide()
         t2lLayout.addWidget(t2Group3)
 
@@ -249,6 +249,10 @@ class WidgetGallery(QDialog):
 
         def ftstinfo():
                 info = "First trace success test for selected models. More info to come."
+                self.updateInfo(info,self.tabs.currentIndex())
+
+        def fullkeyinfo():
+                info = "Whole key test. More info to come."
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def intervalinfo():
@@ -317,6 +321,28 @@ class WidgetGallery(QDialog):
                 models = self.splitter(self.selectedString)
                 subprocess.call(['python', 'scripts/first_trace_success_test.py', str(traces), str(iterations), str(tracestart), str(traceend), str(keybytepos), tracefile, ptfile, keyfile] + models[1:])
 
+        def fullkey():
+                traces = numtraces.text()
+                iterations = numiter.text()
+                interval = traceInterval.text()
+                tracestart = re.search('(\d+):(\d+)', interval).group(1)
+                traceend = re.search('(\d+):(\d+)', interval).group(2)
+                keybytepos = keybytePos.currentIndex()
+                alert = QMessageBox()
+                alert.setText("choose trace file")
+                alert.exec_()
+                tracefile = self.openTracesDialog()
+                if not tracefile: return
+                alert.setText("choose plaintext file")
+                alert.exec_()
+                ptfile = self.openTracesDialog()
+                if not ptfile: return
+                alert.setText("currently the key is hardcoded to be [ 26, 206, 149, 113, 251,  46,  52, 156,   5, 162, 215,  87,  29, 47, 187, 236]. This may be changed to loading a key file instead in the future")
+                alert.exec_()
+                models = self.splitter(self.selectedString)
+                subprocess.call(['python', 'scripts/whole_key_test.py', str(traces), str(iterations), str(tracestart), str(traceend), tracefile, ptfile] + models[1:])
+
+
         def selection(i):
             if i == 0:
                 t2Group1.show()
@@ -352,6 +378,8 @@ class WidgetGallery(QDialog):
         numiterh.clicked.connect(iterinfo)
         art.clicked.connect(avgrank)
         arth.clicked.connect(artinfo)
+        tab2fk.clicked.connect(fullkey)
+        tab2fkh.clicked.connect(fullkeyinfo)
         self.tab2.textEdit.textChanged.connect(textchanget2)
         t2dropdown.currentIndexChanged.connect(selection)
 
