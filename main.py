@@ -85,12 +85,47 @@ class WidgetGallery(QDialog):
 #So if something is createT1L it means create the left side of tab1...
     def createT1L(self):
         self.tab1 = QWidget()
-        tab1Layout = QVBoxLayout(self)
-        self.createBL()
-        self.createBR()
-        tab1Layout.addWidget(self.BL)
-        tab1Layout.addWidget(self.BR)
-        self.tab1.setLayout(tab1Layout)
+        t1lLayout = QVBoxLayout(self)
+
+        t1interval = QWidget()
+        t1interval.setWindowTitle("test")
+        t1intervalLayout = QHBoxLayout()        
+        traceInterval = QLineEdit('Which part of the trace should be trained on? (x:y)')
+        traceIntervalh = QPushButton("?")
+        t1intervalLayout.addWidget(traceInterval, 40)
+        t1intervalLayout.addWidget(traceIntervalh, 1)
+        t1interval.setLayout(t1intervalLayout)
+        t1lLayout.addWidget(t1interval)
+
+        t1LearningRate = QWidget()
+        t1LearningRateLayout = QHBoxLayout()        
+        learningRate = QLineEdit('What learning rate do you want?')
+        learningRateh = QPushButton("?")
+        t1LearningRateLayout.addWidget(learningRate, 40)
+        t1LearningRateLayout.addWidget(learningRateh, 1)
+        t1LearningRate.setLayout(t1LearningRateLayout)
+        t1lLayout.addWidget(t1interval)
+
+        t1interval = QWidget()
+        t1intervalLayout = QHBoxLayout()        
+        traceInterval = QLineEdit('Number of Epochs')
+        traceIntervalh = QPushButton("?")
+        t1intervalLayout.addWidget(traceInterval, 40)
+        t1intervalLayout.addWidget(traceIntervalh, 1)
+        t1interval.setLayout(t1intervalLayout)
+        t1lLayout.addWidget(t1interval)
+
+        t1interval = QWidget()
+        t1intervalLayout = QHBoxLayout()        
+        traceInterval = QLineEdit('Batch Size')
+        traceIntervalh = QPushButton("?")
+        t1intervalLayout.addWidget(traceInterval, 40)
+        t1intervalLayout.addWidget(traceIntervalh, 1)
+        t1interval.setLayout(t1intervalLayout)
+        t1lLayout.addWidget(t1interval)
+
+        self.tab1.setLayout(t1lLayout)
+
 
 #Not sure if there's a better way to do this since I want elements to be aligned.
 #The block separation in this code represents GUI modules.
@@ -654,37 +689,6 @@ class WidgetGallery(QDialog):
         t3Layout.addWidget(self.T3R)
         self.T3.setLayout(t3Layout)
 
-#This will be changed later. The first draft of this program used quadrants for its design.
-#This was the old Bottom Right quadrant. Will be changed to use same design as t2 and t3.
-    def createBL(self):
-        self.BL = QGroupBox("Results")
-        self.BL.textEdit = QTextEdit()
-        self.BL.textEdit.setPlainText("waiting for results...")
-        mylayout = QGridLayout()
-        mylayout.addWidget(self.BL.textEdit,0,0,1,2)
-        mylayout.setRowStretch(5,1)
-        self.BL.setLayout(mylayout)
-
-    def createBR(self):
-        self.BR = QGroupBox("IP address/URL")
-        self.BR.lineEdit = QLineEdit('0.0.0.0')
-        confirmIPButton = QPushButton("Confirm")
-
-        def on_button_clicked():
-                globalIP = self.BR.lineEdit.text()
-                r = requests.get(globalIP)
-                self.BL.textEdit.setPlainText('HEADER:\n\n' + str(r.headers) + '\n\nCONTENT:\n\n' + str(r.content))
-                alert = QMessageBox()
-                alert.setText(str(r.status_code))
-                alert.exec_()
-
-        confirmIPButton.clicked.connect(on_button_clicked)
-
-        layout = QGridLayout()
-        layout.addWidget(self.BR.lineEdit, 0, 0, 1, 2)
-        layout.addWidget(confirmIPButton,1,0,1,2)
-        layout.setRowStretch(5, 1)
-        self.BR.setLayout(layout)
 
 #File browser used to load files if you didn't use the terminal for that.
     def openFileNamesDialog(self):
