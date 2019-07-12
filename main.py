@@ -48,8 +48,8 @@ class WidgetGallery(QDialog):
         self.createT1()
         self.createT2()
         self.createT3()
-        self.tabs.addTab(self.T1,"HTTP GET")
-        self.tabs.addTab(self.T2,"Tests")
+        self.tabs.addTab(self.T1,"Training")
+        self.tabs.addTab(self.T2,"Testing")
         self.tabs.addTab(self.T3,"Utils")
 
         # Currently contains nothing, but it is the tof of the layout above tabs
@@ -543,7 +543,8 @@ class WidgetGallery(QDialog):
                 subprocess.call(['python', 'scripts/trace_plotter.py'] + args[1:])
 
         def unzip():
-                print("this needs to be added")
+                args = self.splitter(self.selectedString)
+                subprocess.call(['python', 'scripts/unzipper.py'] + args[1:])
 
         def selection(i):
             if i == 0:
