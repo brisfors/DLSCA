@@ -124,7 +124,7 @@ class WidgetGallery(QDialog):
         t2dropdownLayout = QHBoxLayout()
         t2dropdown = QComboBox()
         t2dropdown.addItem("Average Rank Test")
-        t2dropdown.addItem("option 2 tbd")
+        t2dropdown.addItem("First Trace Success Test")
         t2dropdown.addItem("option 3 tbd")
         t2dropdownh = QPushButton("?")
         t2dropdownLayout.addWidget(t2dropdown, 40)
@@ -132,9 +132,9 @@ class WidgetGallery(QDialog):
         t2dropdownWidget.setLayout(t2dropdownLayout)
         t2lLayout.addWidget(t2dropdownWidget)
 
-#SELECTION GROUP 1
-        t2Group1 = QWidget()
-        t2Group1Layout = QVBoxLayout()
+#SHARED GROUP
+        t2sharedGroup = QWidget()
+        t2sharedLayout = QVBoxLayout()
 
         t2interval = QWidget()
         t2intervalLayout = QHBoxLayout()        
@@ -143,12 +143,11 @@ class WidgetGallery(QDialog):
         t2intervalLayout.addWidget(traceInterval, 40)
         t2intervalLayout.addWidget(traceIntervalh, 1)
         t2interval.setLayout(t2intervalLayout)
-        t2Group1Layout.addWidget(t2interval)
+        t2sharedLayout.addWidget(t2interval)
 
         t2keybyte = QWidget()
         t2keybyteLayout = QHBoxLayout()
         keybytePos = QComboBox()
-#        keybytePos.addItem("Select Keybyte Position")
         keybytePos.addItem("0")
         keybytePos.addItem("1")
         keybytePos.addItem("2")
@@ -169,7 +168,7 @@ class WidgetGallery(QDialog):
         t2keybyteLayout.addWidget(keybytePos, 40)
         t2keybyteLayout.addWidget(keybytePosh, 1)
         t2keybyte.setLayout(t2keybyteLayout)
-        t2Group1Layout.addWidget(t2keybyte)
+        t2sharedLayout.addWidget(t2keybyte)
 
         t2iter = QWidget()
         t2iterLayout = QHBoxLayout()
@@ -180,8 +179,14 @@ class WidgetGallery(QDialog):
         t2iterLayout.addWidget(numiter, 40)
         t2iterLayout.addWidget(numiterh, 1)
         t2iter.setLayout(t2iterLayout)
-        t2Group1Layout.addWidget(t2iter)
+        t2sharedLayout.addWidget(t2iter)
 
+        t2sharedGroup.setLayout(t2sharedLayout)
+        t2lLayout.addWidget(t2sharedGroup)
+
+#SELECTION GROUP 1
+        t2Group1 = QWidget()
+        t2Group1Layout = QVBoxLayout()
         t2art = QWidget()
         t2artLayout = QHBoxLayout()
         art = QPushButton("run average rank test")
@@ -193,17 +198,17 @@ class WidgetGallery(QDialog):
 
         t2Group1.setLayout(t2Group1Layout)
         t2lLayout.addWidget(t2Group1)
-        self.tab2.setLayout(t2lLayout)
+
 
 
 #SELECTION GROUP 2
         t2Group2 = QWidget()
-        t2ConfirmLayout = QHBoxLayout()
-        tab2Confirm = QPushButton("Confirm")
-        tab2Confirmh = QPushButton("?")
-        t2ConfirmLayout.addWidget(tab2Confirm, 40)
-        t2ConfirmLayout.addWidget(tab2Confirmh, 1)
-        t2Group2.setLayout(t2ConfirmLayout)
+        t2ftstLayout = QHBoxLayout()
+        tab2ftst = QPushButton("run first trace success test")
+        tab2ftsth = QPushButton("?")
+        t2ftstLayout.addWidget(tab2ftst, 40)
+        t2ftstLayout.addWidget(tab2ftsth, 1)
+        t2Group2.setLayout(t2ftstLayout)
         t2Group2.hide()
         t2lLayout.addWidget(t2Group2)
 
@@ -218,6 +223,10 @@ class WidgetGallery(QDialog):
         t2Group3.setLayout(t2HideLayout)
         t2Group3.hide()
         t2lLayout.addWidget(t2Group3)
+
+        self.tab2.setLayout(t2lLayout)
+
+        
 
 #A lot of local functions will be used as well as some "global" (bound to super) functions. 
 #The following is a list of functions that will be used on buttons presses or text changes
@@ -238,8 +247,8 @@ class WidgetGallery(QDialog):
                 info = "Average rank test for selected models. More info to come."
                 self.updateInfo(info,self.tabs.currentIndex())
 
-        def confirminfo():
-                info = "Placeholder."
+        def ftstinfo():
+                info = "First trace success test for selected models. More info to come."
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def intervalinfo():
@@ -275,7 +284,7 @@ class WidgetGallery(QDialog):
                 alert.setText("choose trace file")
                 alert.exec_()
                 tracefile = self.openTracesDialog()
-                if not tracefile: returng
+                if not tracefile: return
                 alert.setText("choose plaintext file")
                 alert.exec_()
                 ptfile = self.openTracesDialog()
@@ -285,21 +294,50 @@ class WidgetGallery(QDialog):
                 models = self.splitter(self.selectedString)
                 subprocess.call(['python', 'scripts/average_rank_test.py', str(traces), str(iterations), str(tracestart), str(traceend), str(keybytepos), tracefile, ptfile] + models[1:])
 
+        def ftst():
+                traces = numtraces.text()
+                iterations = numiter.text()
+                interval = traceInterval.text()
+                tracestart = re.search('(\d+):(\d+)', interval).group(1)
+                traceend = re.search('(\d+):(\d+)', interval).group(2)
+                keybytepos = keybytePos.currentIndex()
+                alert = QMessageBox()
+                alert.setText("choose trace file")
+                alert.exec_()
+                tracefile = self.openTracesDialog()
+                if not tracefile: return
+                alert.setText("choose plaintext file")
+                alert.exec_()
+                ptfile = self.openTracesDialog()
+                if not ptfile: return
+                alert.setText("choose keylist file")
+                alert.exec_()
+                keyfile = self.openTracesDialog()
+                if not keyfile: return                
+                models = self.splitter(self.selectedString)
+                subprocess.call(['python', 'scripts/first_trace_success_test.py', str(traces), str(iterations), str(tracestart), str(traceend), str(keybytepos), tracefile, ptfile, keyfile] + models[1:])
+
         def selection(i):
             if i == 0:
                 t2Group1.show()
                 t2Group2.hide()
                 t2Group3.hide()
+                t2iter.show()
+                t2keybyte.show()
 
             if i == 1:
                 t2Group1.hide()
                 t2Group2.show()
                 t2Group3.hide()
+                t2iter.hide()
+                t2keybyte.show()
 
             if i == 2:
                 t2Group1.hide()
                 t2Group2.hide()
                 t2Group3.show()
+                t2iter.show()
+                t2keybyte.hide()
 
 #Actually bind the scripts to the buttons and textedits. This needs to be defined after the
 #functions they will be used which is why they are hidden down here
@@ -307,8 +345,8 @@ class WidgetGallery(QDialog):
         tab2Button1h.clicked.connect(filebrowserinfo)
         tab2Texth.clicked.connect(selectedinfo)
         t2dropdownh.clicked.connect(dropdowninfo)
-        tab2Confirm.clicked.connect(clickedConfirm)
-        tab2Confirmh.clicked.connect(confirminfo)
+        tab2ftst.clicked.connect(ftst)
+        tab2ftsth.clicked.connect(ftstinfo)
         traceIntervalh.clicked.connect(intervalinfo)
         keybytePosh.clicked.connect(keybyteinfo)
         numiterh.clicked.connect(iterinfo)
@@ -451,9 +489,6 @@ class WidgetGallery(QDialog):
                 info = "A script for plotting a randomly selected trace from each selected trace file. Make sure to only select trace files for this."
                 self.updateInfo(info,self.tabs.currentIndex())
 
-        def clickedConfirm():
-                 print(self.selectedString)
-
         def summary():
                  args = self.splitter(self.selectedString)
                  subprocess.call(['python', 'scripts/model_summary.py'] + args[1:])
@@ -469,6 +504,9 @@ class WidgetGallery(QDialog):
         def traceplot():
                 args = self.splitter(self.selectedString)
                 subprocess.call(['python', 'scripts/trace_plotter.py'] + args[1:])
+
+        def unzip():
+                print("this needs to be added")
 
         def selection(i):
             if i == 0:
@@ -511,7 +549,7 @@ class WidgetGallery(QDialog):
         tab3Button1h.clicked.connect(filebrowserinfo)
         plotHistory.clicked.connect(historyplotter)
         t3dropdownh.clicked.connect(dropdowninfo)  
-        unzipper.clicked.connect(clickedConfirm)
+        unzipper.clicked.connect(unzip)
         unzipperh.clicked.connect(unzipperinfo)
         inShape.clicked.connect(inputshape)
         inShapeh.clicked.connect(inshapeinfo)
