@@ -665,7 +665,7 @@ class WidgetGallery(QDialog):
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def unzipperinfo():
-                info = "SEBASTIAN WRITE YOUR INFOR HERE!!!"
+                info = "If given .tar.zip files containing traces and other files in the format of YYYY.MM.DD-HH.MM.SS_traces.npy it will automatically create and combine the traces and Sbox labels"
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def inshapeinfo():
