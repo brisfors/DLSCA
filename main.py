@@ -96,16 +96,47 @@ class WidgetGallery(QDialog):
         self.tab1 = QWidget()
         t1lLayout = QVBoxLayout(self)
 
+        #Name
+        t1ModelName = QWidget()
+        t1ModelNameLayout = QHBoxLayout()        
+        modelName = QLineEdit('Name')
+        modelNameh = QPushButton("?")
+        t1ModelNameLayout.addWidget(modelName, 40)
+        t1ModelNameLayout.addWidget(modelNameh, 1)
+        t1ModelName.setLayout(t1ModelNameLayout)
+        t1lLayout.addWidget(t1ModelName)
+
+        #Interval
         t1interval = QWidget()
-        t1interval.setWindowTitle("test")
         t1intervalLayout = QHBoxLayout()        
-        traceInterval = QLineEdit('Which part of the trace should be trained on? (x:y)')
+        traceInterval = QLineEdit('57:153')
         traceIntervalh = QPushButton("?")
         t1intervalLayout.addWidget(traceInterval, 40)
         t1intervalLayout.addWidget(traceIntervalh, 1)
         t1interval.setLayout(t1intervalLayout)
         t1lLayout.addWidget(t1interval)
 
+        #Num of nodes
+        t1Nodes = QWidget()
+        t1NodesLayout = QHBoxLayout()        
+        numNodes = QLineEdit('Nodes')
+        numNodesh = QPushButton("?")
+        t1NodesLayout.addWidget(numNodes, 40)
+        t1NodesLayout.addWidget(numNodesh, 1)
+        t1Nodes.setLayout(t1NodesLayout)
+        t1lLayout.addWidget(t1Nodes)
+
+        #Num of layers
+        t1Layers = QWidget()
+        t1LayersLayout = QHBoxLayout()        
+        numLayers = QLineEdit('Layers')
+        numLayersh = QPushButton("?")
+        t1LayersLayout.addWidget(numLayers, 40)
+        t1LayersLayout.addWidget(numLayersh, 1)
+        t1Layers.setLayout(t1LayersLayout)
+        t1lLayout.addWidget(t1Layers)
+
+        #Learning rate
         t1LearningRate = QWidget()
         t1LearningRateLayout = QHBoxLayout()        
         learningRate = QLineEdit('What learning rate do you want?')
@@ -113,27 +144,119 @@ class WidgetGallery(QDialog):
         t1LearningRateLayout.addWidget(learningRate, 40)
         t1LearningRateLayout.addWidget(learningRateh, 1)
         t1LearningRate.setLayout(t1LearningRateLayout)
-        t1lLayout.addWidget(t1interval)
+        t1lLayout.addWidget(t1LearningRate)
 
-        t1interval = QWidget()
-        t1intervalLayout = QHBoxLayout()        
-        traceInterval = QLineEdit('Number of Epochs')
-        traceIntervalh = QPushButton("?")
-        t1intervalLayout.addWidget(traceInterval, 40)
-        t1intervalLayout.addWidget(traceIntervalh, 1)
-        t1interval.setLayout(t1intervalLayout)
-        t1lLayout.addWidget(t1interval)
+        #Num of epochs
+        t1Epochs = QWidget()
+        t1EpochsLayout = QHBoxLayout()        
+        numEpochs = QLineEdit('Number of Epochs')
+        numEpochsh = QPushButton("?")
+        t1EpochsLayout.addWidget(numEpochs, 40)
+        t1EpochsLayout.addWidget(numEpochsh, 1)
+        t1Epochs.setLayout(t1EpochsLayout)
+        t1lLayout.addWidget(t1Epochs)
 
-        t1interval = QWidget()
-        t1intervalLayout = QHBoxLayout()        
-        traceInterval = QLineEdit('Batch Size')
-        traceIntervalh = QPushButton("?")
-        t1intervalLayout.addWidget(traceInterval, 40)
-        t1intervalLayout.addWidget(traceIntervalh, 1)
-        t1interval.setLayout(t1intervalLayout)
-        t1lLayout.addWidget(t1interval)
+        #Batch size
+        t1BatchSize = QWidget()
+        t1BatchSizeLayout = QHBoxLayout()        
+        batchSize = QLineEdit('Batch Size')
+        batchSizeh = QPushButton("?")
+        t1BatchSizeLayout.addWidget(batchSize, 40)
+        t1BatchSizeLayout.addWidget(batchSizeh, 1)
+        t1BatchSize.setLayout(t1BatchSizeLayout)
+        t1lLayout.addWidget(t1BatchSize)
+
+
+        t1Button = QWidget()
+        t1ButtonLayout = QHBoxLayout()
+        trainingButton = QPushButton("Create training file")
+        trainingButtonh = QPushButton("?")
+        t1ButtonLayout.addWidget(trainingButton, 40)
+        t1ButtonLayout.addWidget(trainingButtonh, 1)
+        t1Button.setLayout(t1ButtonLayout)
+        t1lLayout.addWidget(t1Button)
 
         self.tab1.setLayout(t1lLayout)
+
+
+
+        def createTraining():
+                name = modelName.text()
+                nodes = numNodes.text()
+                layers = numLayers.text()
+                lr = learningRate.text()
+                epochs = numEpochs.text()
+                batches = batchSize.text()
+
+                interval = traceInterval.text()
+                traceStart = re.search('(\d+):(\d+)', interval).group(1)
+                traceEnd = re.search('(\d+):(\d+)', interval).group(2)
+
+
+                alert = QMessageBox()
+                alert.setText("choose trace file")
+                alert.exec_()
+                tracefile = self.openTracesDialog()
+                if not tracefile: return
+                alert.setText("choose file containing labels")
+                alert.exec_()
+                labels = self.openTracesDialog()
+                if not labels: return
+                subprocess.call(['python', 'scripts/trainingCreator.py', name, nodes, layers, lr, epochs, batches, traceStart, traceEnd, tracefile, labels])
+                alert.setText("Training file created! You can find it in the base directory.")
+                alert.exec_()
+
+
+
+
+
+
+        #Helpbutton prints
+
+        def nameInfo():
+                info = "Write the name you want to give the model."
+                self.updateInfo(info,self.tabs.currentIndex())        
+
+        def intervalInfo():
+                info = "Set the time interval in the trace that you want the model to train on."
+                self.updateInfo(info,self.tabs.currentIndex())        
+
+        def nodesInfo():
+                info = "Set the number of nodes in each dense layer."
+                self.updateInfo(info,self.tabs.currentIndex())        
+
+        def layersInfo():
+                info = "Set the total number of layers (Including input and output layer)."
+                self.updateInfo(info,self.tabs.currentIndex())        
+
+        def learningRateInfo():
+                info = "Set the learning rate for the RMSPRop optimizer."
+                self.updateInfo(info,self.tabs.currentIndex())      
+  
+        def epochsInfo():
+                info = "Set the number of epochs for the training process."
+                self.updateInfo(info,self.tabs.currentIndex())        
+
+        def batchSizeInfo():
+                info = "Set the size of each training batch."
+                self.updateInfo(info,self.tabs.currentIndex())        
+
+        def buttonInfo():
+                info = "Click here to create a new training script with the set parameters in the src directory."
+                self.updateInfo(info,self.tabs.currentIndex())        
+
+        modelNameh.clicked.connect(nameInfo)
+        traceIntervalh.clicked.connect(intervalInfo)
+        numNodesh.clicked.connect(nameInfo)
+        numLayersh.clicked.connect(layersInfo)
+        learningRateh.clicked.connect(learningRateInfo)
+        numEpochsh.clicked.connect(epochsInfo)
+        batchSizeh.clicked.connect(batchSizeInfo)
+        trainingButtonh.clicked.connect(buttonInfo)
+        trainingButton.clicked.connect(createTraining)
+	
+
+
 
 
 #Not sure if there's a better way to do this since I want elements to be aligned.
@@ -674,6 +797,10 @@ class WidgetGallery(QDialog):
         t1Layout = QHBoxLayout()
         self.createT1L()
         self.createT1R()
+        if self.screenMode <4:
+            self.T1R.setMaximumWidth(100)
+        else: 
+            self.T1R.setMaximumWidth(300)
         t1Layout.addWidget(self.tab1)
         t1Layout.addWidget(self.T1R)
         self.T1.setLayout(t1Layout)        
