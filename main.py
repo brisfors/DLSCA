@@ -139,7 +139,7 @@ class WidgetGallery(QDialog):
         #Learning rate
         t1LearningRate = QWidget()
         t1LearningRateLayout = QHBoxLayout()        
-        learningRate = QLineEdit('What learning rate do you want?')
+        learningRate = QLineEdit('Learning rate')
         learningRateh = QPushButton("?")
         t1LearningRateLayout.addWidget(learningRate, 40)
         t1LearningRateLayout.addWidget(learningRateh, 1)
@@ -222,23 +222,23 @@ class WidgetGallery(QDialog):
                 self.updateInfo(info,self.tabs.currentIndex())        
 
         def nodesInfo():
-                info = "Set the number of nodes in each dense layer."
+                info = "Set the number of nodes in each dense layer (We had 200)."
                 self.updateInfo(info,self.tabs.currentIndex())        
 
         def layersInfo():
-                info = "Set the total number of layers (Including input and output layer)."
+                info = "Set the total number of layers (Including input and output layer) (We had 6)."
                 self.updateInfo(info,self.tabs.currentIndex())        
 
         def learningRateInfo():
-                info = "Set the learning rate for the RMSPRop optimizer."
+                info = "Set the learning rate for the RMSPRop optimizer (Default is 0.01, we had best results with 0.00008)."
                 self.updateInfo(info,self.tabs.currentIndex())      
   
         def epochsInfo():
-                info = "Set the number of epochs for the training process."
+                info = "Set the number of epochs for the training process (We had 200)."
                 self.updateInfo(info,self.tabs.currentIndex())        
 
         def batchSizeInfo():
-                info = "Set the size of each training batch."
+                info = "Set the size of each training batch (We had 100)."
                 self.updateInfo(info,self.tabs.currentIndex())        
 
         def buttonInfo():
@@ -247,7 +247,7 @@ class WidgetGallery(QDialog):
 
         modelNameh.clicked.connect(nameInfo)
         traceIntervalh.clicked.connect(intervalInfo)
-        numNodesh.clicked.connect(nameInfo)
+        numNodesh.clicked.connect(nodesInfo)
         numLayersh.clicked.connect(layersInfo)
         learningRateh.clicked.connect(learningRateInfo)
         numEpochsh.clicked.connect(epochsInfo)
@@ -665,7 +665,7 @@ class WidgetGallery(QDialog):
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def unzipperinfo():
-                info = "SEBASTIAN WRITE YOUR INFOR HERE!!!"
+                info = "If given .tar.zip files containing traces and other files in the format of YYYY.MM.DD-HH.MM.SS_traces.npy it will automatically create and combine the traces and Sbox labels"
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def inshapeinfo():
