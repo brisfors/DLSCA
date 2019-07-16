@@ -496,6 +496,8 @@ class WidgetGallery(QDialog):
                 traceend = re.search('(\d+):(\d+)', interval).group(2)
                 keybytepos = keybytePos.currentIndex()
                 alert = QMessageBox()
+                alert.setText("WARNING! This test takes a very long time")
+                alert.exec_()
                 alert.setText("choose trace file")
                 alert.exec_()
                 tracefile = self.openTracesDialog()
