@@ -1,3 +1,6 @@
+#This test is based on code written by Benadjila et. al at ANSSI. Certain things have been changed
+#but at its core it runs the same test
+
 import re
 import os.path
 import sys
@@ -35,13 +38,7 @@ AES_Sbox = np.array([
             0x8C, 0xA1, 0x89, 0x0D, 0xBF, 0xE6, 0x42, 0x68, 0x41, 0x99, 0x2D, 0x0F, 0xB0, 0x54, 0xBB, 0x16
             ])
 
-#Unchanged from how ANSSI did, more or less. The key is hard coded in here to make it less prone to
-#code error albeit more prone to human error. You could change the tests to load the key in the test
-#but since the fixed key traces we used all have the same key it was never done.
-#
-#I leave some of their comments in here. But to summarize what the method does:
-#it is a cumulative sum of log predictions for each possible keybyte value. We compare the sorted
-#list of these predictions with the de facto real answer to find the rank of the real key value.
+#Calculate the new rank of the real key from X more traces, where X is always one in this implementation
 def rank(predictions, data, plaintext, min_trace_idx, max_trace_idx, last_key_bytes_proba, keybytePos = 0):
 #	keyarray = [ 43, 126,  21,  22,  40, 174, 210, 166, 171, 247,  21, 136,   9, 207,  79,  60]
 #	real_key = keyarray[0]
@@ -73,22 +70,7 @@ def rank(predictions, data, plaintext, min_trace_idx, max_trace_idx, last_key_by
 	real_key_rank = np.where(sorted_proba == key_bytes_proba[real_key])[-1][-1]
 	return (real_key_rank, key_bytes_proba)
 
-
-#This is how ANSSI did it. It's kind of a mess tbh, and their variable naming convention is unclear, but I'll explain it:
-#
-#Model is of course the model to be tested.
-#Input_data is attack traces.
-#Plaintext is attack plaintext.
-#
-#min_trace_idx I think is minimum trace index, same with max_trace_idx. They re used to select a specific range of traces.
-#I don't know why they put it in here and we never use it. It can probably be removed.
-#
-#rank_step is another remnant of ANSSI code that probably should be removed somehow. They used to calculate the rank
-#after seeing 10 traces at a time which gives better looking results. We changed it to use 1 trace per calculation so we
-#get realistic results.
-#
-#Basically what this does is it calculates the rank progression in batches. We set the batch size to 1. Then it returns
-#an array with the rank progression.
+#Calculates the entire rank progression for the correct keybyte over a series of testing traces
 def full_ranks(model, input_data, plaintext, min_trace_idx, max_trace_idx, rank_step, keybytePos = 0):
 	predictions = model.predict(input_data)
 	index = np.arange(min_trace_idx+rank_step, max_trace_idx, rank_step)
@@ -179,29 +161,6 @@ def load_traces(tracepath, ptpath):
 ##### Code starts executing here #####
 ######################################
 
-#you can hard code which model you want to test in te
-#to check all array (this is what the ANSSI team did).
-#I changed it so you can instead call the code from the
-#command line with the arguments being the path to the
-#models you wish to train
-
-###Example usage in linux console###
-#
-#
-#~/projectdir $ python average_rank_test.py ourModels/*
-#
-#This command would run the test for every model
-#saved in the ourModels folder
-#
-#
-#~/projectdir $ python average_rank_test.py ourModels/EM_test[3-7]*
-#
-#This command would test all models named EM_test
-#followed by any of the numbers 3-7. For example
-#it would test EM_test3.h5 but it would not test
-#EM_test2.h5. Useful for when training many models
-#and you wish to only test the newest ones.
-
 
 to_check_all = []
 numtraces = 50
@@ -226,9 +185,8 @@ interval = slice(tracestart+96*keybytepos, traceend+96*keybytepos)
 for (m) in to_check_all:
 	check_model(m, test_traces, test_pt, numtraces, numiter, interval, keybytepos)
 
-
 try:
-	input("Press enter to exit ...")
+        input("Press enter to exit ...")
 except SyntaxError:
-	pass
+        pass
 

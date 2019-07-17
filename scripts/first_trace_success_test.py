@@ -60,11 +60,6 @@ def keytest(model, traces, plaintext, keys):
 #	results[:,0] += 1								 #
 	##################################################################################
 
-#change things here when testing against other data or for other keybyte positions
-#	traces = traces[:,57:152]
-#	plaintext = plaintext[:,0]
-#	keys = keys[:,0]
-
 	predictions = model.predict(traces)
 	maxindices = np.argmax(predictions, axis = 1)
 	for i in range(traces.shape[0]):
@@ -110,10 +105,7 @@ def load_traces(tracefile, ptfile, keyfile):
 ascad_trained_models_folder = "ourModels/"
 
 #model can be hard coded here, but I recommend using the terminal instead
-to_check_all = [
-        ascad_trained_models_folder + "CW_diffLr_8xlearningRate.h5",
-#        ascad_trained_models_folder + "CW_lrDecay001_batches.h5",
-	]
+to_check_all = []
 
 if len(sys.argv) >= 3:
 	numtraces = int(sys.argv[1])

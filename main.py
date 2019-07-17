@@ -411,15 +411,15 @@ class WidgetGallery(QDialog):
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def artinfo():
-                info = "Average rank test for selected models. More info to come."
+                info = "Run the average rank test for all selected models. Currently makes the assumption that the model is MLP. Also the key is hardcoded, but this can be changed to prompt."
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def ftstinfo():
-                info = "First trace success test for selected models. More info to come."
+                info = "Run the first trace success test for all selected models. The same assumptions and limitations as avg. rank test applies here too."
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def fullkeyinfo():
-                info = "Whole key test. More info to come."
+                info = "Runs the full key recovery test. WARNING! This test is EXTREMELY time consuming. Also it currently does not plot the info for you automatically."
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def intervalinfo():
@@ -496,6 +496,8 @@ class WidgetGallery(QDialog):
                 traceend = re.search('(\d+):(\d+)', interval).group(2)
                 keybytepos = keybytePos.currentIndex()
                 alert = QMessageBox()
+                alert.setText("WARNING! This test takes a very long time")
+                alert.exec_()
                 alert.setText("choose trace file")
                 alert.exec_()
                 tracefile = self.openTracesDialog()

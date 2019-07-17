@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from keras.models import load_model
 from keras.losses import categorical_crossentropy
 import tensorflow as tf
+import re
 modelName = 'CW_validation.h5'
 
 ############################################################################################################
@@ -114,7 +115,7 @@ def check_model(model_file, traces, plaintext, num_traces=50, numiter=100, inter
 	input_data = traces
 	plaintext = plaintext
 	model = load_model(model_file)
-	savename = model_file[10:-3]
+	savename = re.search('([^/]+$)', model_file).group(0)[:-3]
 	results = np.zeros((num_traces + 2))
 	for j in range(numiter):
 		permutation = np.random.permutation(traces.shape[0])
@@ -126,7 +127,7 @@ def check_model(model_file, traces, plaintext, num_traces=50, numiter=100, inter
 		maxrank = int(np.amax(earliest))
 		print(maxrank)
 		results[maxrank] += 1
-	np.save(savename + '_X1_wholeKey_results.npy', results)
+	np.save('results/npyresults/' + savename + '_wholeKey_results.npy', results)
 	print(results)
 
 
