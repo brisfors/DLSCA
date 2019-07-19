@@ -1,5 +1,6 @@
 import sys
 import os
+import re
 import numpy as np
 import zipfile
 import tarfile
@@ -44,7 +45,12 @@ yesList = ('yes', 'y', 'Y', 'Yes', 'probably', 'Yeah', 'yeah', 'ye', 'Ye', 'do i
 
 def yes(s):
 	return s in yesList #Returns true if the input was in the list of accepted ways of saying yes.
-	
+
+def sanityCheck(toCheck):
+	zip = Zipfile(toCheck, 'r')
+	namelist = zip.namelist()
+	#TODO FINISH THIS PLEASE
+		
 
 def prettyPrint(value):
     print ("\033c")
@@ -71,11 +77,12 @@ labels = np.zeros(0)
 #Extract the trace zips and the tarfiles within them
 for i in fileNames:
 	prettyPrint('Opening .zip file...')
-	zip = zipfile.ZipFile(i+'.tar.zip', 'r')
+	zip = zipfile.ZipFile(i + '.tar.zip', 'r')
 	zip.extractall(tempDir)
 	zip.close()
 	prettyPrint('Opening .tar file...')
-	tar = tarfile.TarFile(tempDir + i+'.tar', 'r')
+	i = re.search('([^/]+$)', i).group(0)
+	tar = tarfile.TarFile(tempDir + i + '.tar', 'r')
 	tar.extractall(tempDir)
 	tar.close()
 
@@ -136,6 +143,8 @@ else: #They are attack traces
 #Save the traces and labels with their new names
 np.save('traces/' + traceDir + name + "_traces",traces)
 np.save('traces/' + traceDir + name + "_labels",labels)
+
+#TODO ADD A PRINT OUT SO THE USER KNOWS ITS DONE, MAKE IT HAPPY MAYBE WITH A SMILIE
 
 
 #Write the names of the files and their dates/times to a textfile for reference
