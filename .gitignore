@@ -3,3 +3,5 @@
 # File types to ignore
 *.npy
 *.pdf
+*.npz
+*.h5

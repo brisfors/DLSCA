@@ -56,6 +56,7 @@ def search_sequence_numpy(arr,seq,err):
 
 # Compute the rank of the real key for a give set of predictions
 def rank(predictions, plaintext, real_key, min_trace_idx, numtraces, last_key_bytes_proba, offset, permutation):
+
 	# Compute the rank
 	if len(last_key_bytes_proba) == 0:
 		# If this is the first rank we compute, initialize all the estimates to zero
@@ -89,17 +90,20 @@ def rank(predictions, plaintext, real_key, min_trace_idx, numtraces, last_key_by
 	return (real_key_rank, key_bytes_proba)
 
 def full_ranks(model, input_data, plaintext, min_trace_idx, numtraces, rank_step, offset, permutation, interval):
-	# Real key byte value that we will use. '2' is the index of the byte (third byte) of interest.
-	real_key = 26
-	real_key_array = [26, 206, 149, 113, 251, 46, 52, 156, 5, 162, 215, 87, 29, 47, 187, 236]
-#	real_key = 43
-#	real_key_array = [43, 126, 21, 22, 40, 174, 210, 166, 171, 247, 21, 136, 9, 207, 79, 60]
+        if keys.shape[0] == 16:
+                real_key_array = keys
+        else:
+                real_key_array = keys[0]
 
 	# Predict our probabilities
 	newinter = slice(interval.start+96*offset, interval.stop+96*offset)
 	input_data = input_data[permutation, :][:numtraces, newinter]
-	predictions = model.predict(input_data)
 
+	input_layer_shape = model.get_layer(index=0).input_shape
+	if len(input_layer_shape) == 3:
+		input_data = input_data.reshape((input_data.shape[0], input_data.shape[1], 1))
+
+	predictions = model.predict(input_data)
 	index = np.arange(min_trace_idx+rank_step, numtraces, rank_step)
 	f_ranks = np.zeros((len(index), 2), dtype=np.uint32)
 	key_bytes_proba = []
@@ -108,9 +112,8 @@ def full_ranks(model, input_data, plaintext, min_trace_idx, numtraces, rank_step
 		f_ranks[i] = [t - min_trace_idx, real_key_rank]
 	return f_ranks
 
-
 # Check a saved model against Attack traces
-def check_model(model_file, traces, plaintext, num_traces=50, numiter=100, interval = slice(57,153)):
+def check_model(model_file, traces, plaintext, keys, num_traces=50, numiter=100, interval = slice(57,153)):
 	# Load model
 	input_data = traces
 	plaintext = plaintext
@@ -121,7 +124,7 @@ def check_model(model_file, traces, plaintext, num_traces=50, numiter=100, inter
 		permutation = np.random.permutation(traces.shape[0])
 		earliest = np.zeros((16))
 		for i in range(16):
-			ranks = full_ranks(model, input_data, plaintext, 0, num_traces, 1, i, permutation, interval)
+			ranks = full_ranks(model, input_data, plaintext, keys, 0, num_traces, 1, i, permutation, interval)
 			earliest[i] = search_sequence_numpy(ranks[:,1],np.array([0,0,0]), num_traces+1)[0]
 			print(earliest)
 		maxrank = int(np.amax(earliest))
@@ -131,10 +134,11 @@ def check_model(model_file, traces, plaintext, num_traces=50, numiter=100, inter
 	print(results)
 
 
-def load_traces(tracepath, ptpath):
+def load_traces(tracepath, ptpath, keypath):
 	traces = np.load(tracepath)
 	plaintext = np.load(ptpath)
-	return traces, plaintext
+	keys = np.load(keypath)
+	return traces, plaintext, keys
 
 to_check_all = []
 numtraces = 50
@@ -149,14 +153,15 @@ if len(sys.argv) >= 3:
 	traceend = int(sys.argv[4])
 	tracefile = sys.argv[5]
 	ptfile = sys.argv[6]
-	to_check_all = [i for i in sys.argv][7:]
+	keyfile = sys.argv[7]
+	to_check_all = [i for i in sys.argv][8:]
 
-traces, plaintext = load_traces(tracefile, ptfile)
+traces, plaintext, keys = load_traces(tracefile, ptfile, keyfile)
 interval = slice(tracestart, traceend)
 
 
 for m in to_check_all:
-	check_model(m, traces, plaintext, numtraces, numiter, interval)
+	check_model(m, traces, plaintext, keys, numtraces, numiter, interval)
 
 try:
 	input("Press enter to exit ...")

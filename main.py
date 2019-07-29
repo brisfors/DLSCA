@@ -12,11 +12,11 @@ import sys
 import PyQt5.QtWidgets as QtWidgets
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5.QtCore import QDateTime, Qt, QTimer
-from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
-        QDial, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit,
-        QProgressBar, QPushButton, QRadioButton, QScrollBar, QSizePolicy,
-        QSlider, QSpinBox, QStyleFactory, QTableWidget, QTabWidget, QTextEdit,
-        QVBoxLayout, QWidget)
+#from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
+#        QDial, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit,
+#        QProgressBar, QPushButton, QRadioButton, QScrollBar, QSizePolicy,
+#        QSlider, QSpinBox, QStyleFactory, QTableWidget, QTabWidget, QTextEdit,
+#        QVBoxLayout, QWidget)
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon
 import subprocess
@@ -460,10 +460,12 @@ class WidgetGallery(QDialog):
                 alert.exec_()
                 ptfile = self.openTracesDialog()
                 if not ptfile: return
-                alert.setText("currently the key is hardcoded to be [ 26, 206, 149, 113, 251,  46,  52, 156,   5, 162, 215,  87,  29, 47, 187, 236]. This may be changed to loading a key file instead in the future")
+                alert.setText("choose keylist file")
                 alert.exec_()
+                keyfile = self.openTracesDialog()
+                if not keyfile: return    
                 models = self.splitter(self.selectedString)
-                subprocess.call(['python', 'scripts/average_rank_test.py', str(traces), str(iterations), str(tracestart), str(traceend), str(keybytepos), tracefile, ptfile] + models[1:])
+                subprocess.call(['python', 'scripts/average_rank_test.py', str(traces), str(iterations), str(tracestart), str(traceend), str(keybytepos), tracefile, ptfile, keyfile] + models[1:])
 
         def ftst():
                 traces = numtraces.text()
@@ -506,10 +508,13 @@ class WidgetGallery(QDialog):
                 alert.exec_()
                 ptfile = self.openTracesDialog()
                 if not ptfile: return
-                alert.setText("currently the key is hardcoded to be [ 26, 206, 149, 113, 251,  46,  52, 156,   5, 162, 215,  87,  29, 47, 187, 236]. This may be changed to loading a key file instead in the future")
+                alert.setText("choose keylist file")
                 alert.exec_()
+                keyfile = self.openTracesDialog()
+                if not keyfile: return    
+
                 models = self.splitter(self.selectedString)
-                subprocess.call(['python', 'scripts/whole_key_test.py', str(traces), str(iterations), str(tracestart), str(traceend), tracefile, ptfile] + models[1:])
+                subprocess.call(['python', 'scripts/whole_key_test.py', str(traces), str(iterations), str(tracestart), str(traceend), tracefile, ptfile, keyfile] + models[1:])
 
 
         def selection(i):

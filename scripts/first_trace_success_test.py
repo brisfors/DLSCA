@@ -50,15 +50,10 @@ def load_sca_model(model_file):
 #"number of successes" for [:,1]
 def keytest(model, traces, plaintext, keys):
 
-#the path to the testing data needs to be a string. We append this in front of the file names
-#due to our folder structure
-	tracefolder = 'traces/X2_attack/'
 	results = np.zeros((256, 2))
-
-	#comment out this part if you want. This is used to estimate rather than measure #
-#	results += 1									 #
-#	results[:,0] += 1								 #
-	##################################################################################
+	input_layer_shape = model.get_layer(index=0).input_shape
+	if len(input_layer_shape) == 3:
+		traces = traces.reshape((traces.shape[0], traces.shape[1], 1))
 
 	predictions = model.predict(traces)
 	maxindices = np.argmax(predictions, axis = 1)

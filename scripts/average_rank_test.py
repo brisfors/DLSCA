@@ -39,11 +39,12 @@ AES_Sbox = np.array([
             ])
 
 #Calculate the new rank of the real key from X more traces, where X is always one in this implementation
-def rank(predictions, data, plaintext, min_trace_idx, max_trace_idx, last_key_bytes_proba, keybytePos = 0):
-#	keyarray = [ 43, 126,  21,  22,  40, 174, 210, 166, 171, 247,  21, 136,   9, 207,  79,  60]
-#	real_key = keyarray[0]
-	keyarray2 = [ 26, 206, 149, 113, 251,  46,  52, 156,   5, 162, 215,  87,  29, 47, 187, 236]
-	real_key = keyarray2[keybytePos]
+def rank(predictions, data, plaintext, min_trace_idx, max_trace_idx, last_key_bytes_proba, keys, keybytePos = 0):
+	if keys.shape[0] == 16:
+		real_key = keys[keybytePos]
+	else:
+		real_key = keys[0, keybytePos]
+
 
 	if len(last_key_bytes_proba) == 0:
 		# If this is the first rank we compute, initialize all the estimates to zero
@@ -72,54 +73,20 @@ def rank(predictions, data, plaintext, min_trace_idx, max_trace_idx, last_key_by
 
 #Calculates the entire rank progression for the correct keybyte over a series of testing traces
 def full_ranks(model, input_data, plaintext, min_trace_idx, max_trace_idx, rank_step, keybytePos = 0):
+	input_layer_shape = model.get_layer(index=0).input_shape
+	if len(input_layer_shape) == 3:
+		input_data = input_data.reshape((input_data.shape[0], input_data.shape[1], 1))
 	predictions = model.predict(input_data)
 	index = np.arange(min_trace_idx+rank_step, max_trace_idx, rank_step)
 	f_ranks = np.zeros((len(index), 2), dtype=np.uint32)
 	key_bytes_proba = []
 	for t, i in zip(index, range(0, len(index))):
-		real_key_rank, key_bytes_proba = rank(predictions[t-rank_step:t], input_data, plaintext[t-rank_step:t], t-rank_step, t, key_bytes_proba, keybytePos)
+		real_key_rank, key_bytes_proba = rank(predictions[t-rank_step:t], input_data, plaintext[t-rank_step:t], t-rank_step, t, key_bytes_proba, keys, keybytePos)
 		f_ranks[i] = [t - min_trace_idx, real_key_rank]
 	return f_ranks
 
-
-######################################################
-##### This is where you'll want to change things #####
-######################################################
-#
-#num_traces is how many traces you want the model to
-#use for the test. We set the default to 50 since we
-#want our models to out-perform CPA.
-#
-#numiter is how many times to run the rank test for
-#calculating its mean value. We chose 1000 because
-#testing was done on my laptop rather than PDC to
-#not be limited by PDC priority scheduling. Running
-#more than 1000 tests for calculating the average is
-#very time consuming for batch testing. It could be
-#done if a specific model needs very accurate tests.
-#
-#In this method you'll want to change the path to the
-#attack traces and attack plaintext.
-#
-#The line where it says input_data[:,57:153] should
-#be changed to reflect the input size
-#
-#The print statements are mainly for debugging
-#purposes but I'd honestly recommend keeping them.
-#
-#After saving the results of 1000 tests the average
-#is calculated and then the results are plotted.
-#
-#More interesting statistical analysis could be done
-#here. I had some thoughts about plotting the mean,
-#the lower quartile mean and the upper quartile mean.
-#This could show expected good and bad performance.
-#
-#plots are saved and raw data is saved.
-
-
-
-def check_model(model_file, traces, plaintexts, num_traces=50, numiter=100, interval = slice(57,153), keybyte = 0):
+#Run the average rank test for the selected model with given parameters
+def check_model(model_file, traces, plaintexts, keys, num_traces=50, numiter=100, interval = slice(57,153), keybyte = 0):
 	model = load_model(model_file)
 	results = np.zeros((numiter, num_traces-1, 2))
 	input_data = traces
@@ -147,13 +114,12 @@ def check_model(model_file, traces, plaintexts, num_traces=50, numiter=100, inte
 	plt.show(block=False)
 	plt.figure()
 
-#This method load traces stored at tracepath and loads
-#plaintext stored at ptpath.
-
-def load_traces(tracepath, ptpath):
+#Method for loading the numpy arrays with data
+def load_traces(tracepath, ptpath, keypath):
 	traces = np.load(tracepath)
 	plaintext = np.load(ptpath)
-	return traces, plaintext
+	keys = np.load(keypath)
+	return traces, plaintext, keys
 
 
 
@@ -177,13 +143,14 @@ if len(sys.argv) >= 3:
 	keybytepos = int(sys.argv[5])
 	tracefile = sys.argv[6]
 	ptfile = sys.argv[7]
-	to_check_all = [i for i in sys.argv][8:]
+	keyfile = sys.argv[8]
+	to_check_all = [i for i in sys.argv][9:]
 
-test_traces, test_pt = load_traces(tracefile, ptfile)
+test_traces, test_pt, keys = load_traces(tracefile, ptfile, keyfile)
 interval = slice(tracestart+96*keybytepos, traceend+96*keybytepos)
 
 for (m) in to_check_all:
-	check_model(m, test_traces, test_pt, numtraces, numiter, interval, keybytepos)
+	check_model(m, test_traces, test_pt, keys, numtraces, numiter, interval, keybytepos)
 
 try:
         input("Press enter to exit ...")
