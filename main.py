@@ -12,11 +12,6 @@ import sys
 import PyQt5.QtWidgets as QtWidgets
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5.QtCore import QDateTime, Qt, QTimer
-#from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
-#        QDial, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit,
-#        QProgressBar, QPushButton, QRadioButton, QScrollBar, QSizePolicy,
-#        QSlider, QSpinBox, QStyleFactory, QTableWidget, QTabWidget, QTextEdit,
-#        QVBoxLayout, QWidget)
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon
 import subprocess
@@ -208,9 +203,6 @@ class WidgetGallery(QDialog):
 
 
 
-
-
-
         #Helpbutton prints
 
         def nameInfo():
@@ -255,7 +247,6 @@ class WidgetGallery(QDialog):
         trainingButtonh.clicked.connect(buttonInfo)
         trainingButton.clicked.connect(createTraining)
 	
-
 
 
 
@@ -399,11 +390,11 @@ class WidgetGallery(QDialog):
 #The following is a list of functions that will be used on buttons presses or text changes
 #Naming convention: info = update right hand side info column.
         def filebrowserinfo():
-                info = "Browse for files to add to the list in the text editor. Trained models are of type .h5 while history files and raw results data are .npy."
+                info = "Browse for files to add to the list in the text editor. Trained models are of type .h5 while history files and raw results data are .npz or .npy."
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def selectedinfo():
-                info = "This is an editable list of files currently selected. You can edit it by just deleting text. Never remove the first line and never enter non-file non-empty strings on a line."
+                info = "This is an editable list of files currently selected. You can edit it by just deleting text. This flexibility comes at the price of fault tolerance. Never remove the first line and never enter non-file non-empty strings on a line. Make sure you enter the correct files for your purposes."
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def dropdowninfo():
@@ -411,11 +402,11 @@ class WidgetGallery(QDialog):
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def artinfo():
-                info = "Run the average rank test for all selected models. Currently makes the assumption that the model is MLP. Also the key is hardcoded, but this can be changed to prompt."
+                info = "Run the average rank test for all selected models. Graphs of results are saved in results/pdf and numerical results are saved in results/npy."
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def ftstinfo():
-                info = "Run the first trace success test for all selected models. The same assumptions and limitations as avg. rank test applies here too."
+                info = "Run the first trace success test for all selected models. Graphs of results are saved in results/pdf and numerical results are saved in results/npy."
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def fullkeyinfo():
@@ -427,11 +418,11 @@ class WidgetGallery(QDialog):
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def keybyteinfo():
-                info = "select which keybyte position to attack using selected models. Best success is typically attacking the same position as trained on."
+                info = "select which keybyte position to attack using selected models. Best success is typically attacking the same position as trained on. This creates an offset between the base interval e.g. [57:153] and the attacked interval e.g. [249:345]"
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def iterinfo():
-                info = "set the number of traces to plot and the number of test iterations to run for your average results. I recommend leaving them on default while trying to improve models."
+                info = "set the number of traces to plot and the number of test iterations to run for your average results. Default numbers provided that are suitable for quick testing of example model."
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def textchanget2():
@@ -660,11 +651,11 @@ class WidgetGallery(QDialog):
                  self.openFileNamesDialog()
 
         def filebrowserinfo():
-                info = "Browse for files to add to the list in the text editor. Trained models are of type .h5 while history files and raw results data are .npy."
+                info = "Browse for files to add to the list in the text editor. Trained models are of type .h5 while history files and raw results data are .npz or .npy."
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def selectedinfo():
-                info = "This is an editable list of files currently selected. You can edit it by just deleting text. Never remove the first line and never enter non-file non-empty strings on a line."
+                info = "This is an editable list of files currently selected. You can edit it by just deleting text. This flexibility comes at the price of fault tolerance. Never remove the first line and never enter non-file non-empty strings on a line. Make sure you enter the correct files for your purposes."
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def dropdowninfo():
