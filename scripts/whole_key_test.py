@@ -155,6 +155,7 @@ if len(sys.argv) >= 3:
 	ptfile = sys.argv[6]
 	keyfile = sys.argv[7]
 	to_check_all = [i for i in sys.argv][8:]
+	to_check_all = [i for i in to_check_all if i[-3:] == ".h5"]
 
 traces, plaintext, keys = load_traces(tracefile, ptfile, keyfile)
 interval = slice(tracestart, traceend)

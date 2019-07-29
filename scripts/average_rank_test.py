@@ -92,8 +92,6 @@ def check_model(model_file, traces, plaintexts, keys, num_traces=50, numiter=100
 	input_data = traces
 	input_data = input_data[:,interval]
 	plaintext = plaintexts[:,keybyte]
-	print(input_data.shape, ' = trace shape')
-	print(plaintext.shape, ' = pt shape')
 	for i in range(numiter):
 		permutation = np.random.permutation(traces.shape[0])
 		input_data = input_data[permutation,:]
@@ -145,8 +143,11 @@ if len(sys.argv) >= 3:
 	ptfile = sys.argv[7]
 	keyfile = sys.argv[8]
 	to_check_all = [i for i in sys.argv][9:]
+	to_check_all = [i for i in to_check_all if i[-3:] == ".h5"]
 
 test_traces, test_pt, keys = load_traces(tracefile, ptfile, keyfile)
+print(test_traces.shape, ' = trace shape')
+print(test_pt.shape, ' = pt shape')
 interval = slice(tracestart+96*keybytepos, traceend+96*keybytepos)
 
 for (m) in to_check_all:

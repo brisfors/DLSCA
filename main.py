@@ -17,9 +17,6 @@ from PyQt5.QtGui import QIcon
 import subprocess
 import re
 
-#TO_REMOVE
-globalIP = '0.0.0.0'
-
 class WidgetGallery(QDialog):
     def __init__(self, parent=None):
         
