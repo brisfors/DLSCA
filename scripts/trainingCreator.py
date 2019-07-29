@@ -1,7 +1,7 @@
 import sys
 
 
-name = sys.argv[1]
+name = sys.argv[1] + '.h5'
 nodes = sys.argv[2]
 layers = sys.argv[3]
 epochs = sys.argv[5]
@@ -20,7 +20,7 @@ trainingFile = name +'_training.py'
 
 inputDim = upperLimit - lowerLimit
 
-learningRate = (int(sys.argv[4])*0.00001)
+learningRate = str(sys.argv[4])
 
 
 file = open(trainingFile,"w") 

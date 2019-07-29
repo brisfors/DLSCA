@@ -1,5 +1,6 @@
 import sys
 import os
+import re
 import numpy as np
 import zipfile
 import tarfile
@@ -9,6 +10,11 @@ from termcolor import cprint
 import time
 import shutil
 
+
+
+tracesPattern = re.compile("(\d{4}.\d{1,2}.\d{1,2}-\d{1,2}.\d{1,2}.\d{1,2}_traces.npy$)") #This is easy to understand
+textinPattern = re.compile("(\d{4}.\d{1,2}.\d{1,2}-\d{1,2}.\d{1,2}.\d{1,2}_textin.npy$)")
+keylistPattern = re.compile("(\d{4}.\d{1,2}.\d{1,2}-\d{1,2}.\d{1,2}.\d{1,2}_keylist.npy$)")
 
 toPrint = ""
 tempDir = '/tmp/unzipper/'
@@ -44,7 +50,31 @@ yesList = ('yes', 'y', 'Y', 'Yes', 'probably', 'Yeah', 'yeah', 'ye', 'Ye', 'do i
 
 def yes(s):
 	return s in yesList #Returns true if the input was in the list of accepted ways of saying yes.
-	
+
+
+#Takes a zip file, ensures that the tar file inside has the same name as the zip and that the 3 needed files exist and are named correctly.
+def sanityCheck(toCheck):
+	fileExistance = {'traces': 0, 'textin': 0, 'keylist': 0}
+	zip = zipfile.ZipFile(toCheck, 'r')
+	zipCompare = re.search('([^/]+$)', toCheck).group(0)[:-4]
+	tarName = zip.namelist()[0]
+	if tarName == zipCompare: #The tar file has the same name as the zip
+		zip.extractall(tempDir)
+		tar = tarfile.TarFile(tempDir +tarName, 'r')
+		for q in tar.getnames():
+			if tracesPattern.match(q): #_traces.npy exists
+				fileExistance['traces'] += 1
+			if textinPattern.match(q): #_textin.npy exists
+				fileExistance['textin'] += 1
+			if keylistPattern.match(q):#_keylist.npy exists
+				fileExistance['keylist'] += 1
+	try:
+		assert tarName == zipCompare, "The tar file was not named the same as the zip file"
+		assert list(fileExistance.values()) == [1,1,1], "The formatting of the traces/textin/keylist files was incorrect"
+	except AssertionError:
+		raise
+		sys.exit(1)
+
 
 def prettyPrint(value):
     print ("\033c")
@@ -61,7 +91,7 @@ elif zipCount > 0:
 	art += ('    ' + str(zipCount) + ' ZIP.TAR FILES DETECTED.')
 
 #Initialize variables and gather the *.tar.zip file names from the arguments
-fileNames = [i[:-8] for i in sys.argv[1:]]
+fileNames = sys.argv[1:]
 traceFiles = np.zeros(0)
 dates = np.zeros(0)
 traces = np.zeros((0,0))
@@ -70,12 +100,11 @@ labels = np.zeros(0)
 
 #Extract the trace zips and the tarfiles within them
 for i in fileNames:
-	prettyPrint('Opening .zip file...')
-	zip = zipfile.ZipFile(i+'.tar.zip', 'r')
-	zip.extractall(tempDir)
-	zip.close()
+	prettyPrint('Opening .zip file and performing sanity check...')
+	sanityCheck(i)
 	prettyPrint('Opening .tar file...')
-	tar = tarfile.TarFile(tempDir + i+'.tar', 'r')
+	i = re.search('([^/]+$)', i).group(0) #Regex to find everything after the final /
+	tar = tarfile.TarFile(tempDir + i[:-4], 'r')
 	tar.extractall(tempDir)
 	tar.close()
 
@@ -94,15 +123,15 @@ for i in fileNames:
 	for file in os.listdir(tempDir):
 		if fnmatch.fnmatch(file, '*textin.npy'):
 			traceFiles = np.append(traceFiles,file)
-			textin = np.load(tempDir + file)[:,0]
+			textin = np.load(tempDir + file)
 
 	for file in os.listdir(tempDir):
 		if fnmatch.fnmatch(file, '*keylist.npy'):
 			traceFiles = np.append(traceFiles,file)
-			keylist = np.load(tempDir + file)[:,0]
+			keylist = np.load(tempDir + file)
 	
 	#Use the textin and the keylist to calculate the Sbox outputs for each set and place them into labels.
-	labels = np.append(labels,np.array([Sbox[keylist[i]^textin[i]] for i in range(len(keylist))])) #This is easy to understand
+	labels = np.append(labels,np.array(Sbox[keylist^textin]))
 	toPrint += '\nZip file:  [' + i +'] unpacked successfully'
 	shutil.rmtree(tempDir)
 	prettyPrint('')
@@ -136,6 +165,8 @@ else: #They are attack traces
 #Save the traces and labels with their new names
 np.save('traces/' + traceDir + name + "_traces",traces)
 np.save('traces/' + traceDir + name + "_labels",labels)
+
+print("Traces and labels successfully saved in the " + traceDir[:-1] + " directory!")
 
 
 #Write the names of the files and their dates/times to a textfile for reference
