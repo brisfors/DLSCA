@@ -77,7 +77,7 @@ def check_model(model_file, traces, plaintext, keys):
 	filename = re.search('([^/]+$)', model_file).group(0)[:-3]
 	print("*"*30, "\n")
 	print(filename)
-	print("best Sbox values: ", heapq.nlargest(9, range(len(successRate)), successRate.take))
+#	print("best Sbox values: ", heapq.nlargest(9, range(len(successRate)), successRate.take))
 	print("mean success rate", np.mean(successRate))
 	print("_"*30)
 	#todo: label keybyte value charts
@@ -85,7 +85,7 @@ def check_model(model_file, traces, plaintext, keys):
 	plt.ylabel('success rate')
 	plt.title(model_file[10:-3])
 	plt.bar(index, successRate)
-	filename = 'results/pdfresults/' + filename + '_first_try.pdf'
+	filename = 'results/pdfresults/' + filename + '_first_try_keybyte#' + sys.argv[5] + '.pdf'
 	plt.savefig(filename)
 	plt.show(block=False)
 	plt.figure()

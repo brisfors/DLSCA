@@ -402,7 +402,7 @@ class WidgetGallery(QDialog):
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def artinfo():
-                info = "Run the average rank test for all selected models. Graphs of results are saved in results/pdf and numerical results are saved in results/npy."
+                info = "Run the average rank test for all selected models. Graphs of results are saved in results/pdf and numerical results are saved in results/npy. Due to how the test works you must use a fixed key for this test."
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def ftstinfo():
@@ -410,7 +410,7 @@ class WidgetGallery(QDialog):
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def fullkeyinfo():
-                info = "Runs the full key recovery test. WARNING! This test is EXTREMELY time consuming. Also it currently does not plot the info for you automatically."
+                info = "Runs the full key recovery test. WARNING! This test is EXTREMELY time consuming. Also it currently does not plot the info for you automatically. Due to how the test works you must use a fixed key for this test."
                 self.updateInfo(info,self.tabs.currentIndex())
 
         def intervalinfo():
@@ -443,7 +443,7 @@ class WidgetGallery(QDialog):
                 traceend = re.search('(\d+):(\d+)', interval).group(2)
                 keybytepos = keybytePos.currentIndex()
                 alert = QMessageBox()
-                alert.setText("choose trace file")
+                alert.setText("choose trace file. Fixed key")
                 alert.exec_()
                 tracefile = self.openTracesDialog()
                 if not tracefile: return
@@ -451,7 +451,7 @@ class WidgetGallery(QDialog):
                 alert.exec_()
                 ptfile = self.openTracesDialog()
                 if not ptfile: return
-                alert.setText("choose keylist file")
+                alert.setText("choose keylist file. Fixed key.")
                 alert.exec_()
                 keyfile = self.openTracesDialog()
                 if not keyfile: return    
@@ -491,7 +491,7 @@ class WidgetGallery(QDialog):
                 alert = QMessageBox()
                 alert.setText("WARNING! This test takes a very long time")
                 alert.exec_()
-                alert.setText("choose trace file")
+                alert.setText("choose trace file. Fixed key.")
                 alert.exec_()
                 tracefile = self.openTracesDialog()
                 if not tracefile: return
@@ -499,7 +499,7 @@ class WidgetGallery(QDialog):
                 alert.exec_()
                 ptfile = self.openTracesDialog()
                 if not ptfile: return
-                alert.setText("choose keylist file")
+                alert.setText("choose keylist file. Fixed key.")
                 alert.exec_()
                 keyfile = self.openTracesDialog()
                 if not keyfile: return    

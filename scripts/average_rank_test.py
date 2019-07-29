@@ -107,9 +107,9 @@ def check_model(model_file, traces, plaintexts, keys, num_traces=50, numiter=100
 	plt.ylabel('rank')
 	plt.plot(x, y)
 	filename = re.search('([^/]+$)', model_file).group(0)[:-3]
-	npyfile = 'results/npyresults/' + filename + '_average_rank.npy'
+	npyfile = 'results/npyresults/' + filename + '_average_rank_keybyte#' + str(keybyte) + '.npy'
 	np.save(npyfile, results)
-	filename = 'results/pdfresults/' + filename+ '_average_rank.pdf'
+	filename = 'results/pdfresults/' + filename+ '_average_rank_keybyte#' + str(keybyte) + '.pdf'
 	plt.savefig(filename)
 	plt.show(block=False)
 	plt.figure()
