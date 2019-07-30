@@ -131,7 +131,7 @@ def check_model(model_file, traces, plaintext, keys, num_traces=50, numiter=100,
 		#print(maxrank)
 		results[maxrank] += 1
 	np.save('results/npyresults/' + savename + '_wholeKey_results.npy', results)
-	res = results/num_traces
+	res = results/numiter
 	toplot = np.zeros(len(res)-1)
 	for i in range(len(toplot)):
 		if i == 0: continue
