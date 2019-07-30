@@ -12,11 +12,14 @@ import shutil
 
 
 
-tracesPattern = re.compile("(\d{4}.\d{1,2}.\d{1,2}-\d{1,2}.\d{1,2}.\d{1,2}_traces.npy$)") #This is easy to understand
+#These patterns ensure that the files are in the "YYYY.MM.DD-HH.MM.SS_*.npy" format
+#They can be edited to match whatever format your data files are actually in
+tracesPattern = re.compile("(\d{4}.\d{1,2}.\d{1,2}-\d{1,2}.\d{1,2}.\d{1,2}_traces.npy$)")
 textinPattern = re.compile("(\d{4}.\d{1,2}.\d{1,2}-\d{1,2}.\d{1,2}.\d{1,2}_textin.npy$)")
 keylistPattern = re.compile("(\d{4}.\d{1,2}.\d{1,2}-\d{1,2}.\d{1,2}.\d{1,2}_keylist.npy$)")
+cwfilePattern = re.compile("((\d{4}.\d{1,2}.\d{1,2}-\d{1,2}.\d{1,2}.\d{1,2})_.+$)")
 
-toPrint = ""
+greenText = ""
 tempDir = '/tmp/unzipper/'
 #art = ""
 art =  "\n_________________\n|# :  TRACES   : #|\n|  :  INSIDE   :  |\n|  :           :  |\n|  :Sebastian F:  |\n|  :___________:  |\n|     _________   |\n|    | __      |  |\n|    ||  |     |  |\n\____||__|_____|__|"
@@ -46,104 +49,128 @@ Sbox = np.array([
             ])
 
 
-yesList = ('yes', 'y', 'Y', 'Yes', 'probably', 'Yeah', 'yeah', 'ye', 'Ye', 'do it', 'definitely', 'Definitely', 'Sure', 'sure', 'yyesssssss', 'yyes', 'Yyes', 'yse', 'Yse', 'most assuredly yes', 'Most assuredly yes', 'yasss queen', 'YES', 'YeS', 'yeS')
+yesList = ('yes', 'y', 'Y', 'Yes', 'probably', 'Yeah', 'yeah', 'ye', 'Ye', 'yup', 'yep', 'do it', 'definitely', 'Definitely', 'Sure', 'sure', 'yyesssssss', 'yyes', 'Yyes', 'yse', 'Yse', 'most assuredly yes', 'Most assuredly yes', 'yasss queen', 'YES', 'YeS', 'yeS')
 
 def yes(s):
 	return s in yesList #Returns true if the input was in the list of accepted ways of saying yes.
+
+def prettyPrint(value):
+    print ("\033c")
+    cprint(art,'blue', attrs=['bold'])
+    cprint(greenText,'green', attrs=['bold'])
+    cprint(value, 'red', attrs=['bold'])
 
 
 #Takes a zip file, ensures that the tar file inside has the same name as the zip and that the 3 needed files exist and are named correctly.
 def sanityCheck(toCheck):
 	fileExistance = {'traces': 0, 'textin': 0, 'keylist': 0}
-	zip = zipfile.ZipFile(toCheck, 'r')
-	zipCompare = re.search('([^/]+$)', toCheck).group(0)[:-4]
-	tarName = zip.namelist()[0]
-	if tarName == zipCompare: #The tar file has the same name as the zip
-		zip.extractall(tempDir)
-		tar = tarfile.TarFile(tempDir +tarName, 'r')
-		for q in tar.getnames():
-			if tracesPattern.match(q): #_traces.npy exists
-				fileExistance['traces'] += 1
-			if textinPattern.match(q): #_textin.npy exists
-				fileExistance['textin'] += 1
-			if keylistPattern.match(q):#_keylist.npy exists
-				fileExistance['keylist'] += 1
-	try:
-		assert tarName == zipCompare, "The tar file was not named the same as the zip file"
-		assert list(fileExistance.values()) == [1,1,1], "The formatting of the traces/textin/keylist files was incorrect"
+	print('this is toCheck: ', toCheck)
+	for q in toCheck:
+		q = re.search('([^/]+$)', q).group(0)
+		if tracesPattern.match(q): #_traces.npy exists
+			fileExistance['traces'] += 1
+		if textinPattern.match(q): #_textin.npy exists
+			fileExistance['textin'] += 1
+		if keylistPattern.match(q):#_keylist.npy exists
+			fileExistance['keylist'] += 1
+	try: 
+		assert list(fileExistance.values()) == [1,1,1], "Did not receive the necessary files in in the correct format"
 	except AssertionError:
 		raise
 		sys.exit(1)
 
+def inputParser(fileNames):
+	if os.path.isdir(tempDir):
+		print("/tmp/unzipper exists, perhaps this script crashed during execution before, please remove the directory and run again")
+		sys.exit(1)
 
-def prettyPrint(value):
-    print ("\033c")
-    cprint(art,'blue', attrs=['bold'])
-    cprint(toPrint,'green', attrs=['bold'])
-    cprint(value, 'red', attrs=['bold'])
+	while len(fileNames) > 0:
+		if fileNames[0][-4:] in ['.zip', '.tar']:
+			archive = fileNames.pop(0)
+			extract(archive)
 
-zipCount = len(sys.argv) -1
+		elif cwfilePattern.search(fileNames[0]):
+			dateTime = cwfilePattern.search(fileNames[0]).group(2)
+			cwFiles = []
+			while(len(fileNames) > 0 and dateTime in (fileNames[0])):
+				cwFiles.insert(0, fileNames.pop(0))
 
-if zipCount == 0:
-	print('Please provide .zip.tar files as arguments, thanks!')
-	exit()
-elif zipCount > 0:
-	art += ('    ' + str(zipCount) + ' ZIP.TAR FILES DETECTED.')
+			sanityCheck(cwFiles)
+			process(cwFiles)
+			if os.path.isdir(tempDir):
+				shutil.rmtree(tempDir)	
+
+def extract(file):
+	global greenText
+	if file[-4:] == '.zip':
+		prettyPrint('Opening .zip file...')
+		zip = zipfile.ZipFile(file, 'r')
+		zip.extractall(tempDir)
+		zip.close()
+	if file[-4:] == '.tar':
+		prettyPrint('Opening .tar file...')
+		tar = tarfile.TarFile(file, 'r')
+		tar.extractall(tempDir)
+		tar.close()
+	greenText += '\nArchive file:  [' + file + '] unpacked successfully'
+	#More formats can be added in the same way. I avoided adding more formats since they would require installing additional libs
+	#If you add a new format make sure to add the extracted file(s) to the beginning of the fileNames list.
+	if file[:14] == tempDir: #If the extracted file was a temp file
+		os.remove(file)
+	for extracted in os.listdir(tempDir):
+		fileNames.insert(0, tempDir + extracted) #Add the file(s) to the start of the list for either additional extraction or processing
+	
+
+
+
 
 #Initialize variables and gather the *.tar.zip file names from the arguments
 fileNames = sys.argv[1:]
-traceFiles = np.zeros(0)
+details = sys.argv[1:]
 dates = np.zeros(0)
 traces = np.zeros((0,0))
-labels = np.zeros(0)
+labels = np.zeros((0,16))
 
 
 #Extract the trace zips and the tarfiles within them
-for i in fileNames:
-	prettyPrint('Opening .zip file and performing sanity check...')
-	sanityCheck(i)
-	prettyPrint('Opening .tar file...')
-	i = re.search('([^/]+$)', i).group(0) #Regex to find everything after the final /
-	tar = tarfile.TarFile(tempDir + i[:-4], 'r')
-	tar.extractall(tempDir)
-	tar.close()
-
+def process(cwFiles):
+	global dates, traces, labels, greenText
 	#Find the traces, textin and keylist files
 	prettyPrint("Gathering traces and labels from the data...")
-	for file in os.listdir(tempDir):
+	for file in cwFiles:
 		if fnmatch.fnmatch(file, '*traces.npy'):
-			dates = np.append(dates,file[:-11]) #Keep track of which dates/times the traces had, this uniquely identifies each of the sets.
-			traceFiles = np.append(traceFiles,file) #Keep track of which files have been unzipped
-			tempTraces = np.load(tempDir + file)
+			#Keep track of which dates/times the traces had, this uniquely identifies each of the sets.
+			dates = np.append(dates, re.search('([^/]+$)', file).group(0)[:-11]) 
+			greenText += str(dates)
+			tempTraces = np.load(file)
 			if traces.size == 0: #If this is the first file
 				traces = tempTraces #Initialize traces as this trace file
 			else:
 				traces = np.append(traces,tempTraces,axis=0) #Else append these traces to the existing traces
 
-	for file in os.listdir(tempDir):
+	for file in cwFiles:
 		if fnmatch.fnmatch(file, '*textin.npy'):
-			traceFiles = np.append(traceFiles,file)
-			textin = np.load(tempDir + file)
+			textin = np.load(file)
 
-	for file in os.listdir(tempDir):
-		if fnmatch.fnmatch(file, '*keylist.npy'):
-			traceFiles = np.append(traceFiles,file)
-			keylist = np.load(tempDir + file)
+		elif fnmatch.fnmatch(file, '*keylist.npy'):
+			keylist = np.load(file)
 	
 	#Use the textin and the keylist to calculate the Sbox outputs for each set and place them into labels.
-	labels = np.append(labels,np.array(Sbox[keylist^textin]))
-	toPrint += '\nZip file:  [' + i +'] unpacked successfully'
-	shutil.rmtree(tempDir)
+	labels = np.append(labels,np.array(Sbox[keylist^textin]),axis=0)
 	prettyPrint('')
 
-toPrint += "\nThe labels have shape: " + str(labels.shape)
-toPrint += "\nThe traces have shape: " + str(traces.shape)
+
+
+inputParser(fileNames)
+
+greenText += "\nThe labels have shape: " + str(labels.shape)
+greenText += "\nThe traces have shape: " + str(traces.shape)
 
 
 prettyPrint('')
 
 
-toDelete = input("Want me to delete the zip.tar files? ")
+toDelete = input("Want me to delete the input files? ")
 if yes(toDelete):
 	for i in sys.argv[1:]:
 			os.remove(i)
@@ -171,10 +198,15 @@ print("Traces and labels successfully saved in the " + traceDir[:-1] + " directo
 
 #Write the names of the files and their dates/times to a textfile for reference
 textfile = open('traces/' + traceDir + name + '_details.txt','w+')
-for i in range(len(fileNames)):
-	textfile.write(fileNames[i]+'\n')
+
+textfile.write('The files used to construct this trace/label set were:\n')
+for i in range(len(details)):
+	textfile.write(details[i]+'\n')
+
+textfile.write('\nThe ChipWhisperer datasets used to create this trace/label set were:\n')
+for i in range(len(dates)):
 	textfile.write(dates[i]+'\n')
-	textfile.write('\n')
+
 textfile.close()
 
 
