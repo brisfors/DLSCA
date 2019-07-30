@@ -50,15 +50,10 @@ def load_sca_model(model_file):
 #"number of successes" for [:,1]
 def keytest(model, traces, plaintext, keys):
 
-#the path to the testing data needs to be a string. We append this in front of the file names
-#due to our folder structure
-	tracefolder = 'traces/X2_attack/'
 	results = np.zeros((256, 2))
-
-	#comment out this part if you want. This is used to estimate rather than measure #
-#	results += 1									 #
-#	results[:,0] += 1								 #
-	##################################################################################
+	input_layer_shape = model.get_layer(index=0).input_shape
+	if len(input_layer_shape) == 3:
+		traces = traces.reshape((traces.shape[0], traces.shape[1], 1))
 
 	predictions = model.predict(traces)
 	maxindices = np.argmax(predictions, axis = 1)
@@ -82,7 +77,7 @@ def check_model(model_file, traces, plaintext, keys):
 	filename = re.search('([^/]+$)', model_file).group(0)[:-3]
 	print("*"*30, "\n")
 	print(filename)
-	print("best Sbox values: ", heapq.nlargest(9, range(len(successRate)), successRate.take))
+#	print("best Sbox values: ", heapq.nlargest(9, range(len(successRate)), successRate.take))
 	print("mean success rate", np.mean(successRate))
 	print("_"*30)
 	#todo: label keybyte value charts
@@ -90,7 +85,7 @@ def check_model(model_file, traces, plaintext, keys):
 	plt.ylabel('success rate')
 	plt.title(model_file[10:-3])
 	plt.bar(index, successRate)
-	filename = 'results/pdfresults/' + filename + '_first_try.pdf'
+	filename = 'results/pdfresults/' + filename + '_first_try_keybyte#' + sys.argv[5] + '.pdf'
 	plt.savefig(filename)
 	plt.show(block=False)
 	plt.figure()
@@ -117,6 +112,7 @@ if len(sys.argv) >= 3:
 	ptfile = sys.argv[7]
 	keyfile = sys.argv[8]
 	to_check_all = [i for i in sys.argv][9:]
+	to_check_all = [i for i in to_check_all if i[-3:] == ".h5"]
 
 traces, plaintext, keys = load_traces(tracefile, ptfile, keyfile)
 
