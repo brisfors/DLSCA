@@ -89,11 +89,11 @@ def rank(predictions, plaintext, real_key, min_trace_idx, numtraces, last_key_by
 	real_key_rank = np.where(sorted_proba == key_bytes_proba[real_key])[-1][-1]
 	return (real_key_rank, key_bytes_proba)
 
-def full_ranks(model, input_data, plaintext, min_trace_idx, numtraces, rank_step, offset, permutation, interval):
-        if keys.shape[0] == 16:
-                real_key_array = keys
-        else:
-                real_key_array = keys[0]
+def full_ranks(model, input_data, plaintext, keys, min_trace_idx, numtraces, rank_step, offset, permutation, interval):
+	if keys.shape[0] == 16:
+		real_key_array = keys
+	else:
+		real_key_array = keys[0]
 
 	# Predict our probabilities
 	newinter = slice(interval.start+96*offset, interval.stop+96*offset)
