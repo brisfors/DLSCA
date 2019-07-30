@@ -9,7 +9,7 @@ The software has been tested for debian linux distros, so the installation instr
 Install instructions:
 1. install conda. See instructions at: https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
 2. conda create -n tensorflow_env python=3.6
-3. conda activate tensorflow_env **OR** source activate tensorflow_env for older versions
+3. conda activate tensorflow_env **OR** source activate tensorflow_env (for older versions)
 4. conda install -c conda-forge tensorflow=1.12.0
 5. conda install keras
 6. conda install requests
