@@ -64,7 +64,6 @@ def prettyPrint(value):
 #Takes a zip file, ensures that the tar file inside has the same name as the zip and that the 3 needed files exist and are named correctly.
 def sanityCheck(toCheck):
 	fileExistance = {'traces': 0, 'textin': 0, 'keylist': 0}
-	print('this is toCheck: ', toCheck)
 	for q in toCheck:
 		q = re.search('([^/]+$)', q).group(0)
 		if tracesPattern.match(q): #_traces.npy exists
@@ -80,10 +79,6 @@ def sanityCheck(toCheck):
 		sys.exit(1)
 
 def inputParser(fileNames):
-	if os.path.isdir(tempDir):
-		print("/tmp/unzipper exists, perhaps this script crashed during execution before, please remove the directory and run again")
-		sys.exit(1)
-
 	while len(fileNames) > 0:
 		if fileNames[0][-4:] in ['.zip', '.tar']:
 			archive = fileNames.pop(0)
@@ -112,11 +107,15 @@ def extract(file):
 		tar = tarfile.TarFile(file, 'r')
 		tar.extractall(tempDir)
 		tar.close()
-	greenText += '\nArchive file:  [' + file + '] unpacked successfully'
 	#More formats can be added in the same way. I avoided adding more formats since they would require installing additional libs
 	#If you add a new format make sure to add the extracted file(s) to the beginning of the fileNames list.
+	
 	if file[:14] == tempDir: #If the extracted file was a temp file
 		os.remove(file)
+		greenText += '\n      |----->  [' + file + '] unpacked successfully'
+	else:	
+		greenText += '\nArchive file:  [' + file + '] unpacked successfully'
+
 	for extracted in os.listdir(tempDir):
 		fileNames.insert(0, tempDir + extracted) #Add the file(s) to the start of the list for either additional extraction or processing
 	
@@ -138,10 +137,10 @@ def process(cwFiles):
 	#Find the traces, textin and keylist files
 	prettyPrint("Gathering traces and labels from the data...")
 	for file in cwFiles:
+		greenText += '\n         |-->  [' + file + '] Processed'
 		if fnmatch.fnmatch(file, '*traces.npy'):
 			#Keep track of which dates/times the traces had, this uniquely identifies each of the sets.
 			dates = np.append(dates, re.search('([^/]+$)', file).group(0)[:-11]) 
-			greenText += str(dates)
 			tempTraces = np.load(file)
 			if traces.size == 0: #If this is the first file
 				traces = tempTraces #Initialize traces as this trace file
@@ -160,53 +159,45 @@ def process(cwFiles):
 	prettyPrint('')
 
 
+#CODE EXECUTION BEGINS HERE
+if os.path.isdir(tempDir):
+	print("/tmp/unzipper exists, perhaps this script crashed during execution before, please remove the directory and run again")
+	sys.exit(1)
 
 inputParser(fileNames)
 
 greenText += "\nThe labels have shape: " + str(labels.shape)
 greenText += "\nThe traces have shape: " + str(traces.shape)
-
-
 prettyPrint('')
-
 
 toDelete = input("Want me to delete the input files? ")
 if yes(toDelete):
 	for i in sys.argv[1:]:
 			os.remove(i)
-
 prettyPrint('')
 
 
 trainingTraces = input("Are these training traces? ")
-
-name = input("Give me a name for these traces: ")
-	
-
+name = input("Give me a name for these traces: ")	
 if yes(trainingTraces):
 	traceDir = 'training/'
 else: #They are attack traces
 	traceDir = 'attack/'
 
-
 #Save the traces and labels with their new names
 np.save('traces/' + traceDir + name + "_traces",traces)
 np.save('traces/' + traceDir + name + "_labels",labels)
-
 print("Traces and labels successfully saved in the " + traceDir[:-1] + " directory!")
 
 
 #Write the names of the files and their dates/times to a textfile for reference
 textfile = open('traces/' + traceDir + name + '_details.txt','w+')
-
 textfile.write('The files used to construct this trace/label set were:\n')
 for i in range(len(details)):
 	textfile.write(details[i]+'\n')
-
 textfile.write('\nThe ChipWhisperer datasets used to create this trace/label set were:\n')
 for i in range(len(dates)):
 	textfile.write(dates[i]+'\n')
-
 textfile.close()
 
 
