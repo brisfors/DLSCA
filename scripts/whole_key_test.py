@@ -126,12 +126,27 @@ def check_model(model_file, traces, plaintext, keys, num_traces=50, numiter=100,
 		for i in range(16):
 			ranks = full_ranks(model, input_data, plaintext, keys, 0, num_traces, 1, i, permutation, interval)
 			earliest[i] = search_sequence_numpy(ranks[:,1],np.array([0,0,0]), num_traces+1)[0]
-			print(earliest)
+			#print(earliest)
 		maxrank = int(np.amax(earliest))
-		print(maxrank)
+		#print(maxrank)
 		results[maxrank] += 1
 	np.save('results/npyresults/' + savename + '_wholeKey_results.npy', results)
-	print(results)
+	res = results/num_traces
+	toplot = np.zeros(len(res)-1)
+	for i in range(len(toplot)):
+		if i == 0: continue
+		else:
+			toplot[i] = toplot[i-1] + res[i-1]
+			
+	plt.title('Full key recovery CDF for '+savename)
+	plt.xlabel('number of traces')
+	plt.ylabel('success rate')
+	plt.plot(toplot)
+	filename = 'results/pdfresults/' + savename+ '_wholeKey_results.pdf'
+	plt.savefig(filename)
+	plt.show(block=False)
+	plt.figure()
+	#print(results)
 
 
 def load_traces(tracepath, ptpath, keypath):
