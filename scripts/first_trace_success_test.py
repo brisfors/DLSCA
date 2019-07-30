@@ -83,7 +83,7 @@ def check_model(model_file, traces, plaintext, keys):
 	#todo: label keybyte value charts
 	plt.xlabel('label value')
 	plt.ylabel('success rate')
-	plt.title(model_file[10:-3])
+	plt.title(filename)
 	plt.bar(index, successRate)
 	filename = 'results/pdfresults/' + filename + '_first_try_keybyte#' + sys.argv[5] + '.pdf'
 	plt.savefig(filename)

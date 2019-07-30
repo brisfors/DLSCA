@@ -92,6 +92,7 @@ def check_model(model_file, traces, plaintexts, keys, num_traces=50, numiter=100
 	input_data = traces
 	input_data = input_data[:,interval]
 	plaintext = plaintexts[:,keybyte]
+        filename = re.search('([^/]+$)', model_file).group(0)[:-3]
 	for i in range(numiter):
 		permutation = np.random.permutation(traces.shape[0])
 		input_data = input_data[permutation,:]
@@ -100,11 +101,10 @@ def check_model(model_file, traces, plaintexts, keys, num_traces=50, numiter=100
 		results[i] = ranks
 	x = [ranks[i][0] for i in range(0, ranks.shape[0])]
 	y = [np.mean(results, axis = 0)[i][1] for i in range(0, ranks.shape[0])]
-	plt.title('Performance of '+model_file+' against '+'XMega2FixedKey')
+	plt.title('Performance of '+filename)
 	plt.xlabel('number of traces')
 	plt.ylabel('rank')
 	plt.plot(x, y)
-	filename = re.search('([^/]+$)', model_file).group(0)[:-3]
 	npyfile = 'results/npyresults/' + filename + '_average_rank_keybyte#' + str(keybyte) + '.npy'
 	np.save(npyfile, results)
 	filename = 'results/pdfresults/' + filename+ '_average_rank_keybyte#' + str(keybyte) + '.pdf'
