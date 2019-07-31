@@ -27,13 +27,12 @@ class WidgetGallery(QDialog):
         if self.screenSize.width()>1900: self.screenMode = 2
         if self.screenSize.width()>2500: self.screenMode = 3
         if self.screenSize.width()>3800: self.screenMode = 4
-
         super(WidgetGallery, self).__init__(parent)
 
         self.originalPalette = QApplication.palette()
         self.selectedString = "selected files:"         #String used to generate list of args for scripts
-        self.resize(600,500)                            #Application default resolution
-
+        if self.screenMode < 3: self.resize(600,500)                            #Application default resolution
+        if self.screenMode >= 3: self.resize(250 + (self.screenMode * 250),500)
         # Initialize tab screen
         self.tabs = QTabWidget()
         self.tabs.blockSignals(True)
@@ -90,72 +89,93 @@ class WidgetGallery(QDialog):
 
         #Name
         t1ModelName = QWidget()
-        t1ModelNameLayout = QHBoxLayout()        
-        modelName = QLineEdit('Name')
+        hori = QHBoxLayout()
+        vert = QVBoxLayout()     
+        modelName = QLineEdit('MyModel')
         modelNameh = QPushButton("?")
-        t1ModelNameLayout.addWidget(modelName, 40)
-        t1ModelNameLayout.addWidget(modelNameh, 1)
-        t1ModelName.setLayout(t1ModelNameLayout)
+        vert.addWidget(QLabel("Name:"))
+        hori.addWidget(modelName, 40)
+        hori.addWidget(modelNameh, 1)
+        vert.addLayout(hori)
+        t1ModelName.setLayout(vert)
         t1lLayout.addWidget(t1ModelName)
 
         #Interval
         t1interval = QWidget()
-        t1intervalLayout = QHBoxLayout()        
+        hori = QHBoxLayout()
+        vert = QVBoxLayout()    
+        vert.addWidget(QLabel("Training interval:"))    
         traceInterval = QLineEdit('57:153')
         traceIntervalh = QPushButton("?")
-        t1intervalLayout.addWidget(traceInterval, 40)
-        t1intervalLayout.addWidget(traceIntervalh, 1)
-        t1interval.setLayout(t1intervalLayout)
+        hori.addWidget(traceInterval, 40)
+        hori.addWidget(traceIntervalh, 1)
+        vert.addLayout(hori)
+        t1interval.setLayout(vert)
         t1lLayout.addWidget(t1interval)
 
         #Num of nodes
         t1Nodes = QWidget()
-        t1NodesLayout = QHBoxLayout()        
-        numNodes = QLineEdit('Nodes')
+        hori = QHBoxLayout()
+        vert = QVBoxLayout()
+        vert.addWidget(QLabel("Number of nodes:"))        
+        numNodes = QLineEdit('200')
         numNodesh = QPushButton("?")
-        t1NodesLayout.addWidget(numNodes, 40)
-        t1NodesLayout.addWidget(numNodesh, 1)
-        t1Nodes.setLayout(t1NodesLayout)
+        hori.addWidget(numNodes, 40)
+        hori.addWidget(numNodesh, 1)
+        vert.addLayout(hori)
+        t1Nodes.setLayout(vert)
         t1lLayout.addWidget(t1Nodes)
 
         #Num of layers
         t1Layers = QWidget()
-        t1LayersLayout = QHBoxLayout()        
-        numLayers = QLineEdit('Layers')
+        hori = QHBoxLayout()
+        vert = QVBoxLayout()
+        vert.addWidget(QLabel("Number of layers:"))     
+        numLayers = QLineEdit('6')
         numLayersh = QPushButton("?")
-        t1LayersLayout.addWidget(numLayers, 40)
-        t1LayersLayout.addWidget(numLayersh, 1)
-        t1Layers.setLayout(t1LayersLayout)
+        hori.addWidget(numLayers, 40)
+        hori.addWidget(numLayersh, 1)
+        vert.addLayout(hori)
+        t1Layers.setLayout(vert)
         t1lLayout.addWidget(t1Layers)
 
         #Learning rate
         t1LearningRate = QWidget()
-        t1LearningRateLayout = QHBoxLayout()        
-        learningRate = QLineEdit('Learning rate')
+        hori = QHBoxLayout()
+        vert = QVBoxLayout()
+        vert.addWidget(QLabel("Learning rate:"))
+        learningRate = QLineEdit('0.00008')
         learningRateh = QPushButton("?")
-        t1LearningRateLayout.addWidget(learningRate, 40)
-        t1LearningRateLayout.addWidget(learningRateh, 1)
-        t1LearningRate.setLayout(t1LearningRateLayout)
+        hori.addWidget(learningRate, 40)
+        hori.addWidget(learningRateh, 1)
+        vert.addLayout(hori)
+        t1LearningRate.setLayout(vert)
         t1lLayout.addWidget(t1LearningRate)
 
         #Num of epochs
         t1Epochs = QWidget()
-        t1EpochsLayout = QHBoxLayout()        
-        numEpochs = QLineEdit('Number of Epochs')
+        hori = QHBoxLayout()
+        vert = QVBoxLayout()
+        vert.addWidget(QLabel("Number of epochs:"))      
+        numEpochs = QLineEdit('200')
         numEpochsh = QPushButton("?")
-        t1EpochsLayout.addWidget(numEpochs, 40)
-        t1EpochsLayout.addWidget(numEpochsh, 1)
-        t1Epochs.setLayout(t1EpochsLayout)
+        hori.addWidget(numEpochs, 40)
+        hori.addWidget(numEpochsh, 1)
+        vert.addLayout(hori)
+        t1Epochs.setLayout(vert)
         t1lLayout.addWidget(t1Epochs)
 
         #Batch size
         t1BatchSize = QWidget()
-        t1BatchSizeLayout = QHBoxLayout()        
-        batchSize = QLineEdit('Batch Size')
+        hori = QHBoxLayout()
+        vert = QVBoxLayout()
+        vert.addWidget(QLabel("Batch size:"))
+        batchSize = QLineEdit('100')
         batchSizeh = QPushButton("?")
-        t1BatchSizeLayout.addWidget(batchSize, 40)
-        t1BatchSizeLayout.addWidget(batchSizeh, 1)
-        t1BatchSize.setLayout(t1BatchSizeLayout)
+        hori.addWidget(batchSize, 40)
+        hori.addWidget(batchSizeh, 1)
+        vert.addLayout(hori)
+        t1BatchSize.setLayout(vert)
         t1lLayout.addWidget(t1BatchSize)
 
 
@@ -757,6 +777,7 @@ class WidgetGallery(QDialog):
 #The following three definitions are for right hand side of tabs, used for displaying info.
     def createT1R(self):
         self.T1R = QWidget()
+        self.T1R.setMinimumWidth(self.screenMode * 75)
         t1rLayout = QVBoxLayout(self)
         self.tab1info = QLabel()
         self.tab1info.setWordWrap(True)
@@ -766,6 +787,7 @@ class WidgetGallery(QDialog):
 
     def createT2R(self):
         self.T2R = QWidget()
+        self.T2R.setMinimumWidth(self.screenMode * 75)
         t2rLayout = QVBoxLayout(self)
         self.tab2info = QLabel()
         self.tab2info.setWordWrap(True)
@@ -775,6 +797,7 @@ class WidgetGallery(QDialog):
 
     def createT3R(self):
         self.T3R = QWidget()
+        self.T3R.setMinimumWidth(self.screenMode * 75)
         t3rLayout = QVBoxLayout(self)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)

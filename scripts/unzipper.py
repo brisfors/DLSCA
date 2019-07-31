@@ -10,6 +10,12 @@ from termcolor import cprint
 import time
 import shutil
 
+#Initialize variables and gather the *.tar.zip file names from the arguments
+fileNames = sys.argv[1:]
+details = sys.argv[1:]
+dates = np.zeros(0)
+traces = np.zeros((0,0))
+labels = np.zeros((0,16))
 
 
 #These patterns ensure that the files are in the "YYYY.MM.DD-HH.MM.SS_*.npy" format
@@ -19,14 +25,11 @@ textinPattern = re.compile("(\d{4}.\d{1,2}.\d{1,2}-\d{1,2}.\d{1,2}.\d{1,2}_texti
 keylistPattern = re.compile("(\d{4}.\d{1,2}.\d{1,2}-\d{1,2}.\d{1,2}.\d{1,2}_keylist.npy$)")
 cwfilePattern = re.compile("((\d{4}.\d{1,2}.\d{1,2}-\d{1,2}.\d{1,2}.\d{1,2})_.+$)")
 
+#These are for visuals
 greenText = ""
 tempDir = '/tmp/unzipper/'
-#art = ""
 art =  "\n_________________\n|# :  TRACES   : #|\n|  :  INSIDE   :  |\n|  :           :  |\n|  :Sebastian F:  |\n|  :___________:  |\n|     _________   |\n|    | __      |  |\n|    ||  |     |  |\n\____||__|_____|__|"
 
-count = 0
-
-tempPrint = ""
 
 #Sbox mapping for bytes
 Sbox = np.array([
@@ -118,17 +121,7 @@ def extract(file):
 
 	for extracted in os.listdir(tempDir):
 		fileNames.insert(0, tempDir + extracted) #Add the file(s) to the start of the list for either additional extraction or processing
-	
 
-
-
-
-#Initialize variables and gather the *.tar.zip file names from the arguments
-fileNames = sys.argv[1:]
-details = sys.argv[1:]
-dates = np.zeros(0)
-traces = np.zeros((0,0))
-labels = np.zeros((0,16))
 
 
 #Extract the trace zips and the tarfiles within them
@@ -147,6 +140,17 @@ def process(cwFiles):
 			else:
 				traces = np.append(traces,tempTraces,axis=0) #Else append these traces to the existing traces
 
+
+	labelMaker(cwFiles)
+	
+	prettyPrint('')
+
+
+#This function creates the labels. They are currently created by calculating the Sbox output of the first Sbox
+#but this function can be replaced with any code you want for calculating labels, they simply need to be appended to the global labels list when done.
+#Just ensure that you have the same number of labels as you have traces.
+def labelMaker(cwFiles):
+	global labels
 	for file in cwFiles:
 		if fnmatch.fnmatch(file, '*textin.npy'):
 			textin = np.load(file)
@@ -156,7 +160,6 @@ def process(cwFiles):
 	
 	#Use the textin and the keylist to calculate the Sbox outputs for each set and place them into labels.
 	labels = np.append(labels,np.array(Sbox[keylist^textin]),axis=0)
-	prettyPrint('')
 
 
 #CODE EXECUTION BEGINS HERE
