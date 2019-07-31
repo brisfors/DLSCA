@@ -11,8 +11,9 @@ modelName = 'CW_validation.h5'
 
 ############################################################################################################
 #													   #
-# this is a test on Xmega2 traces that tests *every* keybyte from the trace sequentially by moving the     #
-# attack window by 95 timesteps. This would not work at all with a different implementation as it stands.  #
+# this tests *every* keybyte from the trace sequentially by moving the attack window by 96 timesteps.      # 
+# The test is reliant on an offset of 96 points between keybytes, which corresponds to Xmega traces        #
+# captured using ChipWhisperer.                                                                            #
 #													   #
 ############################################################################################################
 
