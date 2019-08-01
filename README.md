@@ -13,5 +13,6 @@ Install instructions:
 4. conda install -c conda-forge tensorflow=1.12.0
 5. conda install keras
 6. pip install fbs
+7. pip install pyqt5 (possible bug being investigated)
 7. Clone this repository
 8. That's it! Just run "python main.py"
