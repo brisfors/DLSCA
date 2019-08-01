@@ -7,7 +7,6 @@
 #
 #################################################################################
 
-import requests
 import sys
 import PyQt5.QtWidgets as QtWidgets
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
