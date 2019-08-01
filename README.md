@@ -12,7 +12,6 @@ Install instructions:
 3. conda activate tensorflow_env **OR** source activate tensorflow_env (for older versions)
 4. conda install -c conda-forge tensorflow=1.12.0
 5. conda install keras
-6. conda install requests
-7. pip install fbs
-8. Clone this repository
-9. That's it! Just run "python main.py"
+6. pip install fbs
+7. Clone this repository
+8. That's it! Just run "python main.py"
