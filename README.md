@@ -16,8 +16,9 @@ Install instructions:
 5. conda install keras
 6. pip install fbs
 7. conda install pyqt
-7. Clone this repository
-8. That's it! Just run "python main.py"
+8. conda install matplotlib
+9. Clone this repository
+10. That's it! Just run "python main.py"
 
 ********
 
