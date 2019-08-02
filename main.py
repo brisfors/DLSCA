@@ -60,7 +60,11 @@ class WidgetGallery(QDialog):
 
         # Input argument handling
         if '-d' in sys.argv:
-            subprocess.call(['python', 'scripts/diagnostics.py'])            
+            subprocess.call(['python', 'scripts/diagnostics.py'])
+
+        if '-h' in sys.argv:
+            print("\nUSAGE:\npython main.py flag0 arg0 arg1 arg2 ...\n\n\nFLAGS:\n-t\tstart in test tab\n\n-u\tstart in utility tab\n\n-d\trun diagnostics\n\n-h\tprint usage\n\n\nEXAMPLES:\npython main.py myFile\t\tload myFile\n\npython main.py ourModels/MLP/*\tload all MLP models\n\npython main.py -u history/*\tload all history files in util tab")
+            sys.exit()            
 
         if len(sys.argv)>2:
             if sys.argv[1] == "-t":
