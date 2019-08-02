@@ -16,6 +16,7 @@ from PyQt5.QtGui import QIcon
 import subprocess
 import re
 
+
 class WidgetGallery(QDialog):
     def __init__(self, parent=None):
         
@@ -58,6 +59,9 @@ class WidgetGallery(QDialog):
         self.setWindowTitle("Deep Learning SCA Tool")
 
         # Input argument handling
+        if '-d' in sys.argv:
+            subprocess.call(['python', 'scripts/diagnostics.py'])            
+
         if len(sys.argv)>2:
             if sys.argv[1] == "-t":
                 self.tabs.setCurrentIndex(1)
@@ -785,6 +789,22 @@ class WidgetGallery(QDialog):
                 t3Group3.hide()
                 t3Group4.hide()
                 t3Group5.show()
+
+# For some reason this code does not work.
+# Left in here just in case a solution is found
+# because it would make it easier to introduce
+# new elements into the program
+# One would have to comment out (or remove) the
+# above if clauses
+#            for j in range(t3dropdown.count()):
+#                x = "t3Group"+str(j+1)
+#                print(str(i+1) in x[-1:])
+#                print(x)
+#                if str(i+1) in x[-1:]:
+#                     exec("%s.show()" % (x))
+#                else:
+#                     exec("%s.hide()" % (x))
+#            print("")   
 
 
         tab3Button1.clicked.connect(clickedt3b1)  
