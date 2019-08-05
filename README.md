@@ -6,6 +6,8 @@ user friendly version of otherwise quite arcane scripts.
 
 The software has been tested for debian linux distros, so the installation instructions may differ if you are running something else. It also seems to work on Windows with conda installed.
 
+********
+
 Install instructions:
 1. install conda. See instructions at: https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
 2. conda create -n tensorflow_env python=3.6
@@ -14,8 +16,11 @@ Install instructions:
 5. conda install keras
 6. pip install fbs
 7. conda install pyqt
-7. Clone this repository
-8. That's it! Just run "python main.py"
+8. conda install matplotlib
+9. Clone this repository
+10. That's it! Just run "python main.py"
+
+********
 
 Usage instructions:
 Conda is used to manage and compartmentalize execution environments. The main reason it is recommended in the install instructions is that it helps prevent dependency errors. It also removes a lot of the problems with differences between python 2 and python 3 so long as you remember to keep all python 2 libraries in one environment and all python 3 libraries in another. The command:
@@ -47,14 +52,13 @@ If you want to start in the utilities tab then call it with the flag -u. For exa
 
 7. python main.py -u history/*
 
-*******************
-(planned features)
-*******************
 Running the following command displays usage information:
-python main.py -h
+
+8. python main.py -h
 
 If you are having trouble with running the program then there is a diagnostics script included. You can run this either directly or by running the command:
-python main.py -d
+
+9. python main.py -d
 
 The diagnostic tool does not interact well with pipes* so if you want to send diagnostics info to someone you should copy the output from the terminal window.
 
