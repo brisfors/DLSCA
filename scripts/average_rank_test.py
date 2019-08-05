@@ -92,7 +92,7 @@ def check_model(model_file, traces, plaintexts, keys, num_traces=50, numiter=100
 	input_data = traces
 	input_data = input_data[:,interval]
 	plaintext = plaintexts[:,keybyte]
-        filename = re.search('([^/]+$)', model_file).group(0)[:-3]
+	filename = re.search('([^/]+$)', model_file).group(0)[:-3]
 	for i in range(numiter):
 		permutation = np.random.permutation(traces.shape[0])
 		input_data = input_data[permutation,:]
@@ -154,7 +154,7 @@ for (m) in to_check_all:
 	check_model(m, test_traces, test_pt, keys, numtraces, numiter, interval, keybytepos)
 
 try:
-        input("Press enter to exit ...")
+        input("Test Finished, press enter to continue ...")
 except SyntaxError:
         pass
 

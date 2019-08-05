@@ -181,7 +181,7 @@ for m in to_check_all:
 	check_model(m, traces, plaintext, keys, numtraces, numiter, interval)
 
 try:
-	input("Press enter to exit ...")
+	input("Test finished, press enter to exit ...")
 except SyntaxError:
 	pass
 
