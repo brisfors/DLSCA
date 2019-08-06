@@ -104,6 +104,9 @@ def inputParser(fileNames):
 			#if os.path.isdir(tempDir):
 			#	shutil.rmtree(tempDir)	
 			#This part used to clear after each processing but shouldn't be needed anymore
+		else:
+			print("ERROR: I have detected a file which is not a CW file nor a .zip or .tar, exiting.")
+			sys.exit(1)
 def extract(file):
 	global greenText
 	if file[-4:] == '.zip':
