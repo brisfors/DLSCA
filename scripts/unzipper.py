@@ -12,11 +12,13 @@ import shutil
 
 #Initialize variables and gather the *.tar.zip file names from the arguments
 fileNames = sys.argv[1:]
+processedFiles = []
 details = sys.argv[1:]
 dates = np.zeros(0)
 traces = np.zeros((0,0))
-labels = np.zeros((0,16))
-
+labels = np.zeros((0,16), dtype = int)
+keys = np.zeros((0,16), dtype = int)
+plainTexts = np.zeros((0,16), dtype = int)
 
 #These patterns ensure that the files are in the "YYYY.MM.DD-HH.MM.SS_*.npy" format
 #They can be edited to match whatever format your data files are actually in
@@ -25,7 +27,7 @@ textinPattern = re.compile("(\d{4}.\d{1,2}.\d{1,2}-\d{1,2}.\d{1,2}.\d{1,2}_texti
 keylistPattern = re.compile("(\d{4}.\d{1,2}.\d{1,2}-\d{1,2}.\d{1,2}.\d{1,2}_keylist.npy$)")
 cwfilePattern = re.compile("((\d{4}.\d{1,2}.\d{1,2}-\d{1,2}.\d{1,2}.\d{1,2})_.+$)")
 
-#These are for visuals
+#These are for 	visuals
 greenText = ""
 tempDir = '/tmp/unzipper/'
 art =  "\n_________________\n|# :  TRACES   : #|\n|  :  INSIDE   :  |\n|  :           :  |\n|  :Sebastian F:  |\n|  :___________:  |\n|     _________   |\n|    | __      |  |\n|    ||  |     |  |\n\____||__|_____|__|"
@@ -52,16 +54,17 @@ Sbox = np.array([
             ])
 
 
-yesList = ('yes', 'y', 'Y', 'Yes', 'probably', 'Yeah', 'yeah', 'ye', 'Ye', 'yup', 'yep', 'do it', 'definitely', 'Definitely', 'Sure', 'sure', 'yyesssssss', 'yyes', 'Yyes', 'yse', 'Yse', 'most assuredly yes', 'Most assuredly yes', 'yasss queen', 'YES', 'YeS', 'yeS')
+yesList = ('y', 'Y', 'yes', 'Yes', 'probably', 'Yeah', 'yeah', 'ye', 'Ye', 'yup', 'yep', 'do it', 'definitely', 'Definitely', 'Sure', 'sure', 'yyesssssss', 'yyes', 'Yyes', 'yse', 'Yse', 'most assuredly yes', 'Most assuredly yes', 'yasss queen', 'YES', 'YeS', 'yeS')
 
 def yes(s):
 	return s in yesList #Returns true if the input was in the list of accepted ways of saying yes.
 
 def prettyPrint(value):
-    print ("\033c")
-    cprint(art,'blue', attrs=['bold'])
-    cprint(greenText,'green', attrs=['bold'])
-    cprint(value, 'red', attrs=['bold'])
+	
+	print ("\033c")
+	cprint(art,'blue', attrs=['bold'])
+	cprint(greenText,'green', attrs=['bold'])
+	cprint(value, 'red', attrs=['bold'])
 
 
 #Takes a zip file, ensures that the tar file inside has the same name as the zip and that the 3 needed files exist and are named correctly.
@@ -90,14 +93,17 @@ def inputParser(fileNames):
 		elif cwfilePattern.search(fileNames[0]):
 			dateTime = cwfilePattern.search(fileNames[0]).group(2)
 			cwFiles = []
-			while(len(fileNames) > 0 and dateTime in (fileNames[0])):
-				cwFiles.insert(0, fileNames.pop(0))
-
+			x = 0
+			while x < len(fileNames):
+				if dateTime in fileNames[x]:
+					cwFiles.insert(0,fileNames[x])
+					fileNames.remove(fileNames[x])
+				else: x += 1
 			sanityCheck(cwFiles)
 			process(cwFiles)
-			if os.path.isdir(tempDir):
-				shutil.rmtree(tempDir)	
-
+			#if os.path.isdir(tempDir):
+			#	shutil.rmtree(tempDir)	
+			#This part used to clear after each processing but shouldn't be needed anymore
 def extract(file):
 	global greenText
 	if file[-4:] == '.zip':
@@ -120,7 +126,8 @@ def extract(file):
 		greenText += '\nArchive file:  [' + file + '] unpacked successfully'
 
 	for extracted in os.listdir(tempDir):
-		fileNames.insert(0, tempDir + extracted) #Add the file(s) to the start of the list for either additional extraction or processing
+		if tempDir + extracted not in fileNames + processedFiles:
+			fileNames.insert(0, tempDir + extracted) #Add the file(s) to the start of the list for either additional extraction or processing
 
 
 
@@ -130,6 +137,7 @@ def process(cwFiles):
 	#Find the traces, textin and keylist files
 	prettyPrint("Gathering traces and labels from the data...")
 	for file in cwFiles:
+		processedFiles.append(file)
 		greenText += '\n         |-->  [' + file + '] Processed'
 		if fnmatch.fnmatch(file, '*traces.npy'):
 			#Keep track of which dates/times the traces had, this uniquely identifies each of the sets.
@@ -139,10 +147,7 @@ def process(cwFiles):
 				traces = tempTraces #Initialize traces as this trace file
 			else:
 				traces = np.append(traces,tempTraces,axis=0) #Else append these traces to the existing traces
-
-
 	labelMaker(cwFiles)
-	
 	prettyPrint('')
 
 
@@ -152,46 +157,64 @@ def process(cwFiles):
 def labelMaker(cwFiles):
 	global labels
 	for file in cwFiles:
-		if fnmatch.fnmatch(file, '*textin.npy'):
-			textin = np.load(file)
-
-		elif fnmatch.fnmatch(file, '*keylist.npy'):
+		if fnmatch.fnmatch(file, '*keylist.npy'):
 			keylist = np.load(file)
+
+		elif fnmatch.fnmatch(file, '*textin.npy'):
+			textin = np.load(file)
 	
 	#Use the textin and the keylist to calculate the Sbox outputs for each set and place them into labels.
-	labels = np.append(labels,np.array(Sbox[keylist^textin]),axis=0)
+	if yes(trainingTraces):
+		labels = np.append(labels,np.array(Sbox[keylist^textin]),axis=0)
+	#Or if they are attack traces, you'll just want the keys and plaintexts	
+	else:
+		keyAndPlaintextAppender(keylist, textin)
+
+def keyAndPlaintextAppender(keylist, textin):
+	global keys
+	global plainTexts
+
+	keys = np.append(keys, keylist, axis=0)
+	plainTexts = np.append(plainTexts, textin, axis=0)
+
 
 
 #CODE EXECUTION BEGINS HERE
 if os.path.isdir(tempDir):
-	print("/tmp/unzipper exists, perhaps this script crashed during execution before, please remove the directory and run again")
-	sys.exit(1)
+	shutil.rmtree(tempDir)
+
+prettyPrint('')
+trainingTraces = input("Are these training traces? [y/n]")
+name = input("Give me a name for these traces: ")
 
 inputParser(fileNames)
 
-greenText += "\nThe labels have shape: " + str(labels.shape)
 greenText += "\nThe traces have shape: " + str(traces.shape)
+
+
+#Save the resulting data
+if yes(trainingTraces):
+	traceDir = 'training/'
+	greenText += "\nThe labels have shape: " + str(labels.shape)
+	np.save('traces/' + traceDir + name + "_labels", labels)
+else: #They are attack traces
+	traceDir = 'attack/'
+	greenText += "\nThe keys have shape: " + str(keys.shape)
+	greenText += "\nThe plaintexts have shape: " + str(plainTexts.shape)
+	np.save('traces/' + traceDir + name + "_keys", keys)
+	np.save('traces/' + traceDir + name + "_plaintexts", plainTexts)
+
+prettyPrint('Saving the unzipped traces')
+np.save('traces/' + traceDir + name + "_traces",traces)
 prettyPrint('')
 
-toDelete = input("Want me to delete the input files? ")
+toDelete = input("Want me to delete the input files? [y/n] ")
 if yes(toDelete):
 	for i in sys.argv[1:]:
 			os.remove(i)
+
+greenText += "\nTraces and labels successfully saved in the " + traceDir[:-1] + " directory!"
 prettyPrint('')
-
-
-trainingTraces = input("Are these training traces? ")
-name = input("Give me a name for these traces: ")	
-if yes(trainingTraces):
-	traceDir = 'training/'
-else: #They are attack traces
-	traceDir = 'attack/'
-
-#Save the traces and labels with their new names
-np.save('traces/' + traceDir + name + "_traces",traces)
-np.save('traces/' + traceDir + name + "_labels",labels)
-print("Traces and labels successfully saved in the " + traceDir[:-1] + " directory!")
-
 
 #Write the names of the files and their dates/times to a textfile for reference
 textfile = open('traces/' + traceDir + name + '_details.txt','w+')
@@ -202,7 +225,8 @@ textfile.write('\nThe ChipWhisperer datasets used to create this trace/label set
 for i in range(len(dates)):
 	textfile.write(dates[i]+'\n')
 textfile.close()
-
+greenText += "\nExecution complete, enjoy your traces."
+prettyPrint('')
 
 
 
