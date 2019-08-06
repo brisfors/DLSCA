@@ -1,4 +1,5 @@
 import sys
+import re
 
 
 name = sys.argv[1] + '.h5'
@@ -11,12 +12,12 @@ lowerLimit = int(sys.argv[7])
 
 upperLimit = int(sys.argv[8])
 
-traces = sys.argv[9]
+traces = re.search("(?:[^/]*).((?:[^/]*).(?:[^/]*).(?:[^/]*))$", sys.argv[9]).group(1)
 
 labels = sys.argv[10]
 
 
-trainingFile = name +'_training.py'
+trainingFile = sys.argv[1] +'_training.py'
 
 inputDim = upperLimit - lowerLimit
 
