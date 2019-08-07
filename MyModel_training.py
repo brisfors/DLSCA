@@ -17,7 +17,7 @@ from keras.utils import to_categorical
 from keras.models import load_model
 import time
 
-modelName = 'jhylgyuglu.h5'
+modelName = 'MyModel.h5'
 
 
 ######This model creates the MLP model######
@@ -49,12 +49,12 @@ def create_model(node=200,layer_nb=6):
 
 def load_traces():
 	#Import our traces
-	traces = np.load('traces/training/Blalbblal_traces.npy')[:,57:153] 
+	traces = np.load('traces/training/Blalbblal_labels.npy')[:,57:153] 
 	labels = np.load('/home/me/git_repos/DLSCA/traces/training/Blalbblal_labels.npy')
 	
 	#Trace and label indexing
 	delimitedTraces = traces[:,:]
-	delimitedLabels = labels[:,10]
+	delimitedLabels = labels[:,14]
 
 	return (delimitedTraces, delimitedLabels)
 
