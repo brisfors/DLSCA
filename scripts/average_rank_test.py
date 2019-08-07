@@ -126,6 +126,20 @@ def load_traces(tracepath, ptpath, keypath):
 ######################################
 
 
+
+#=========================================#
+#the interval size is by default set to 96
+#which corresponds to the interval size
+#of an ATxmega128D4 traces captured using
+#ChipWhisperer. Analyze the trace if you
+#are using something different and change
+#this value!
+#=========================================#
+
+#******************
+INTERVAL_SIZE = 96
+#******************
+
 to_check_all = []
 numtraces = 50
 numiter = 100
@@ -148,7 +162,7 @@ if len(sys.argv) >= 3:
 test_traces, test_pt, keys = load_traces(tracefile, ptfile, keyfile)
 print(test_traces.shape, ' = trace shape')
 print(test_pt.shape, ' = pt shape')
-interval = slice(tracestart+96*keybytepos, traceend+96*keybytepos)
+interval = slice(tracestart+INTERVAL_SIZE*keybytepos, traceend+INTERVAL_SIZE*keybytepos)
 
 for (m) in to_check_all:
 	check_model(m, test_traces, test_pt, keys, numtraces, numiter, interval, keybytepos)

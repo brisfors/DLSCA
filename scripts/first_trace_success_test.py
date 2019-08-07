@@ -96,8 +96,22 @@ def load_traces(tracefile, ptfile, keyfile):
 	keys = np.load(keyfile)
 	return traces, plaintext, keys
 
-# Our folders
-ascad_trained_models_folder = "ourModels/"
+############################
+#CODE STARTS EXECUTING HERE#
+############################
+
+#=========================================#
+#the interval size is by default set to 96
+#which corresponds to the interval size
+#of an ATxmega128D4 traces captured using
+#ChipWhisperer. Analyze the trace if you
+#are using something different and change
+#this value!
+#=========================================#
+
+#******************
+INTERVAL_SIZE = 96
+#******************
 
 #model can be hard coded here, but I recommend using the terminal instead
 to_check_all = []
@@ -116,7 +130,7 @@ if len(sys.argv) >= 3:
 
 traces, plaintext, keys = load_traces(tracefile, ptfile, keyfile)
 
-interval = slice(tracestart+96*keybytepos, traceend+96*keybytepos)
+interval = slice(tracestart+INTERVAL_SIZE*keybytepos, traceend+INTERVAL_SIZE*keybytepos)
 
 print(traces.shape)
 print(plaintext.shape)

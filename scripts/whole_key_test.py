@@ -96,8 +96,10 @@ def full_ranks(model, input_data, plaintext, keys, min_trace_idx, numtraces, ran
 	else:
 		real_key_array = keys[0]
 
+	global INTERVAL_SIZE
+
 	# Predict our probabilities
-	newinter = slice(interval.start+96*offset, interval.stop+96*offset)
+	newinter = slice(interval.start+INTERVAL_SIZE*offset, interval.stop+INTERVAL_SIZE*offset)
 	input_data = input_data[permutation, :][:numtraces, newinter]
 
 	input_layer_shape = model.get_layer(index=0).input_shape
@@ -155,6 +157,24 @@ def load_traces(tracepath, ptpath, keypath):
 	plaintext = np.load(ptpath)
 	keys = np.load(keypath)
 	return traces, plaintext, keys
+
+
+############################
+#CODE STARTS EXECUTING HERE#
+############################
+
+#=========================================#
+#the interval size is by default set to 96
+#which corresponds to the interval size
+#of an ATxmega128D4 traces captured using
+#ChipWhisperer. Analyze the trace if you
+#are using something different and change
+#this value!
+#=========================================#
+
+#******************
+INTERVAL_SIZE = 96
+#******************
 
 to_check_all = []
 numtraces = 50
