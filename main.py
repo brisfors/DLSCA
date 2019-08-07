@@ -119,6 +119,35 @@ class WidgetGallery(QDialog):
         vert.addLayout(hori)
         t1interval.setLayout(vert)
         t1lLayout.addWidget(t1interval)
+	
+	#Which keybyte
+        t1Keybyte = QWidget()
+        hori = QHBoxLayout()
+        vert = QVBoxLayout()
+        vert.addWidget(QLabel("Keybyte to test"))
+        keybytePos = QComboBox()
+        keybytePos.addItem("0")
+        keybytePos.addItem("1")
+        keybytePos.addItem("2")
+        keybytePos.addItem("3")
+        keybytePos.addItem("4")
+        keybytePos.addItem("5")
+        keybytePos.addItem("6")
+        keybytePos.addItem("7")
+        keybytePos.addItem("8")
+        keybytePos.addItem("9")
+        keybytePos.addItem("A")
+        keybytePos.addItem("B")
+        keybytePos.addItem("C")
+        keybytePos.addItem("D")
+        keybytePos.addItem("E")
+        keybytePos.addItem("F")
+        keybyteh = QPushButton("?")
+        hori.addWidget(keybytePos, 40)
+        hori.addWidget(keybyteh, 1)
+        vert.addLayout(hori)
+        t1Keybyte.setLayout(vert)
+        t1lLayout.addWidget(t1Keybyte)
 
         #Num of nodes
         t1Nodes = QWidget()
@@ -206,22 +235,22 @@ class WidgetGallery(QDialog):
                 lr = learningRate.text()
                 epochs = numEpochs.text()
                 batches = batchSize.text()
+                keybytepos = str(keybytePos.currentIndex())
 
                 interval = traceInterval.text()
                 traceStart = re.search('(\d+):(\d+)', interval).group(1)
                 traceEnd = re.search('(\d+):(\d+)', interval).group(2)
 
-
                 alert = QMessageBox()
-                alert.setText("choose trace file")
+                alert.setText("Choose trace file")
                 alert.exec_()
                 tracefile = self.openTracesDialog()
                 if not tracefile: return
-                alert.setText("choose file containing labels")
+                alert.setText("Choose file containing labels")
                 alert.exec_()
                 labels = self.openTracesDialog()
                 if not labels: return
-                subprocess.call(['python', 'scripts/trainingCreator.py', name, nodes, layers, lr, epochs, batches, traceStart, traceEnd, tracefile, labels])
+                subprocess.call(['python', 'scripts/trainingCreator.py', name, nodes, layers, lr, epochs, batches, traceStart, traceEnd, tracefile, labels, keybytepos])
                 alert.setText("Training file created! You can find it in the base directory.")
                 alert.exec_()
 

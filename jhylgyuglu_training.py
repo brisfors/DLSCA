@@ -1,26 +1,4 @@
-import sys
-import re
-
-#Initialize all the variables for ease of readability
-name = sys.argv[1] + '.h5'
-nodes = sys.argv[2]
-layers = sys.argv[3]
-epochs = sys.argv[5]
-batchSize = sys.argv[6]
-lowerLimit = int(sys.argv[7])
-upperLimit = int(sys.argv[8])
-traces = re.search("(?:[^/]*).((?:[^/]*).(?:[^/]*).(?:[^/]*))$", sys.argv[9]).group(1)
-labels = sys.argv[10]
-keybytepos = sys.argv[11]
-trainingFile = sys.argv[1] +'_training.py'
-inputDim = upperLimit - lowerLimit
-learningRate = str(sys.argv[4])
-
-
-file = open(trainingFile,"w") 
-
-
-file.write("""import os.path
+import os.path
 import sys
 import h5py
 import numpy as np
@@ -39,11 +17,7 @@ from keras.utils import to_categorical
 from keras.models import load_model
 import time
 
-modelName = '""")
-
-file.write(name)
-
-file.write("""'
+modelName = 'jhylgyuglu.h5'
 
 
 ######This model creates the MLP model######
@@ -57,30 +31,13 @@ file.write("""'
 #loss = The loss function of the model (Currently categorical crossentropy)
 #metrics = The metric by which the model is optimized (Currently accuracy)
 
-def create_model(node=""")
-
-file.write(nodes)
-
-file.write(",layer_nb=")
-
-file.write(layers)
-
-file.write("""):
+def create_model(node=200,layer_nb=6):
 	model = Sequential()
-	model.add(Dense(node, input_dim=""")
-
-file.write(str(inputDim))
-
-file.write(""", activation='relu'))
+	model.add(Dense(node, input_dim=96, activation='relu'))
 	for i in range(layer_nb-2):
 		model.add(Dense(node, activation='relu'))
 	model.add(Dense(256, activation='softmax'))
-	optimizer = RMSprop(lr=""")
-
-file.write(str(learningRate))
-
-
-file.write(""")
+	optimizer = RMSprop(lr=0.00008)
 	model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
 	return model
 
@@ -92,32 +49,12 @@ file.write(""")
 
 def load_traces():
 	#Import our traces
-	traces = np.load('""")
-
-file.write(traces)
-
-file.write("')[:,")
-
-file.write(str(lowerLimit))
-
-file.write(":")
-
-file.write(str(upperLimit))
-
-file.write("""] 
-	labels = np.load('""")
-
-file.write(labels)
-
-file.write("""')
+	traces = np.load('traces/training/Blalbblal_traces.npy')[:,57:153] 
+	labels = np.load('/home/me/git_repos/DLSCA/traces/training/Blalbblal_labels.npy')
 	
 	#Trace and label indexing
 	delimitedTraces = traces[:,:]
-	delimitedLabels = labels[:,""")
-
-file.write(keybytepos)
-
-file.write("""]
+	delimitedLabels = labels[:,10]
 
 	return (delimitedTraces, delimitedLabels)
 
@@ -158,34 +95,7 @@ model_folder = "ourModels/"
 
 ### MLP training
 mlp = create_model()
-train_model(traces, labels, mlp, model_folder + modelName, epochs=""")
-
-file.write(epochs)
-
-file.write(", batch_size=")
-
-file.write(batchSize)
-
-file.write(""")
+train_model(traces, labels, mlp, model_folder + modelName, epochs=200, batch_size=100)
 
 end = time.time()
-print("The total running time was: ",((end-start)/60), " minutes.") """)
-
-file.close() 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+print("The total running time was: ",((end-start)/60), " minutes.") 
