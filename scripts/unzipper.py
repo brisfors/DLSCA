@@ -101,9 +101,6 @@ def inputParser(fileNames):
 				else: x += 1
 			sanityCheck(cwFiles)
 			process(cwFiles)
-			#if os.path.isdir(tempDir):
-			#	shutil.rmtree(tempDir)	
-			#This part used to clear after each processing but shouldn't be needed anymore
 		else:
 			print("ERROR: I have detected a file which is not a CW file nor a .zip or .tar, exiting.")
 			sys.exit(1)
@@ -160,10 +157,10 @@ def process(cwFiles):
 def labelMaker(cwFiles):
 	global labels
 	for file in cwFiles:
-		if fnmatch.fnmatch(file, '*keylist.npy'):
+		if keylistPattern.match(file):
 			keylist = np.load(file)
 
-		elif fnmatch.fnmatch(file, '*textin.npy'):
+		elif textinPattern.match(file):
 			textin = np.load(file)
 	
 	#Use the textin and the keylist to calculate the Sbox outputs for each set and place them into labels.
@@ -216,7 +213,7 @@ if yes(toDelete):
 	for i in sys.argv[1:]:
 			os.remove(i)
 
-greenText += "\nTraces and labels successfully saved in the " + traceDir[:-1] + " directory!"
+greenText += "\nTraces and labels are successfully saved in the " + traceDir[:-1] + " directory!"
 prettyPrint('')
 
 #Write the names of the files and their dates/times to a textfile for reference

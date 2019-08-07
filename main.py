@@ -8,6 +8,7 @@
 #################################################################################
 
 import sys
+import os
 import PyQt5.QtWidgets as QtWidgets
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 from PyQt5.QtCore import QDateTime, Qt, QTimer
@@ -251,7 +252,13 @@ class WidgetGallery(QDialog):
                 labels = self.openTracesDialog()
                 if not labels: return
                 subprocess.call(['python', 'scripts/trainingCreator.py', name, nodes, layers, lr, epochs, batches, traceStart, traceEnd, tracefile, labels, keybytepos])
-                alert.setText("Training file created! You can find it in the base directory.")
+                print("Training file created! You can find it in the base directory. \nContents of: " + os.getcwd() + ':')
+                for entry in os.listdir(os.getcwd()):
+                    if entry == name +'_training.py':
+                        print(entry + ' <----- Your training file')
+                    else:
+                        print(entry)
+                alert.setText("Done!")
                 alert.exec_()
 
 
