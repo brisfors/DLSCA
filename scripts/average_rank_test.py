@@ -13,8 +13,8 @@ import tensorflow as tf
 
 ############################################################################################################
 #													   #
-# this is a test on traces that have been randomly permuted each time the test is run. This helps indicate #
-# the variance of first time correct guesses. Tests only first keybyte.                                    #
+# this is a test on traces that have been randomly permuted each time the test is run. This helps prevent  #
+# the variance of testing only once.                                                                       #
 #													   #
 ############################################################################################################
 
