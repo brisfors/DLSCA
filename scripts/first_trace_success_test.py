@@ -10,7 +10,7 @@ import heapq
 import re
 
 modelName = 'CW_validation.h5'
-
+successResultsNPY = []
 ############################################################################################################
 #													   #
 # this test was designed to measure the first attempt success rate of classification, and thus of keybyte  #
@@ -66,7 +66,8 @@ def keytest(model, traces, plaintext, keys):
 
 #check first try accuracy of model against XMega2 test data
 def check_model(model_file, traces, plaintext, keys):
-	# Load model
+	global successResultsNPY
+	#Load model
 	model = load_sca_model(model_file)
 
 	#calculate first guess performance on random dataset and give results for each keybyte value
@@ -75,6 +76,7 @@ def check_model(model_file, traces, plaintext, keys):
 	index = np.arange(performance.shape[0])
 	successRate = performance[:,1]/performance[:,0]
 	filename = re.search('([^/]+$)', model_file).group(0)[:-3]
+	successResultsNPY += [(filename, np.mean(successRate))]
 	print("*"*30, "\n")
 	print(filename)
 #	print("best Sbox values: ", heapq.nlargest(9, range(len(successRate)), successRate.take))
@@ -146,6 +148,8 @@ for m in to_check_all:
 	check_model(m, traces, plaintext, keys)
 
 try:
+	np.save("results/npyresults/first_trace_success_rates.npy",np.array(successResultsNPY))
+	print("results stored in the ./results folder")
 	input("Test finished, press enter to continue ...")
 except SyntaxError:
 	pass

@@ -168,6 +168,7 @@ for (m) in to_check_all:
 	check_model(m, test_traces, test_pt, keys, numtraces, numiter, interval, keybytepos)
 
 try:
+	print("results stored in the ./results folder")
         input("Test Finished, press enter to continue ...")
 except SyntaxError:
         pass

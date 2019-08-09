@@ -201,6 +201,7 @@ for m in to_check_all:
 	check_model(m, traces, plaintext, keys, numtraces, numiter, interval)
 
 try:
+	print("results stored in the ./results folder")
 	input("Test finished, press enter to exit ...")
 except SyntaxError:
 	pass
