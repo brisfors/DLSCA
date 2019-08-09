@@ -44,7 +44,7 @@ preloads file1, file2, ..., fileN into the selected files. In bash you can use w
 
 5. python main.py ourModels/MLP/myModel\*
 
-would load all MLP models whose name start with myModel. You can read more about bash wildcards if you want to know mroe advanced usages, but here is an example of how it can be used:
+would load all MLP models whose name start with myModel. You can read more about bash wildcards if you want to know more advanced usages, but here is an example of how it can be used:
 
 6. python main.py ourModels/MLP/CW_diffEpochs_[3-6][0-9]\*#[3-9]\*
 
