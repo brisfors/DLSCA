@@ -945,7 +945,7 @@ class WidgetGallery(QDialog):
     def openFileNamesDialog(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        files, _ = QFileDialog.getOpenFileNames(self,"QFileDialog.getOpenFileNames()", "","All Files (*);;Model Files (*.h5);;Numpy Arrays (*.npy);;Numpy Zipfiles (*.npz)", options=options)
+        files, _ = QFileDialog.getOpenFileNames(self,"File Browser", "","All Files (*);;Model Files (*.h5);;Numpy Arrays (*.npy);;Numpy Zipfiles (*.npz)", options=options)
         if files:
             temp = self.selectedString
             for i in files:
@@ -955,7 +955,7 @@ class WidgetGallery(QDialog):
     def openTracesDialog(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getOpenFileName(self,"QFileDialog.getOpenFileName()", "","Numpy Arrays (*.npy)", options=options)
+        fileName, _ = QFileDialog.getOpenFileName(self,"Trace Browser", "","Numpy Arrays (*.npy)", options=options)
         if fileName:
             return fileName
         else:

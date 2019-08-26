@@ -3,13 +3,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 
+namelist = []
+
 if len(sys.argv) > 1:
-  namelist = [sys.argv[i+1] for i in range(len(sys.argv)-1) if sys.argv[i+1].endswith('.npz')]
+  namelist = [i for i in sys.argv[1:] if i.endswith('.npz')]
 
 plotlist = []
 
 for name in namelist:
-  plotlist.insert(0, np.load(name)['arr_0'].item()['val_acc'])
+  plotlist.insert(0, np.load(name, allow_pickle=True)['arr_0'].item()['val_acc'])
 
 for i in range(len(namelist)):
   plt.xlabel('epoch')

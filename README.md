@@ -44,7 +44,7 @@ preloads file1, file2, ..., fileN into the selected files. In bash you can use w
 
 5. python main.py ourModels/MLP/myModel\*
 
-would load all MLP models whose name start with myModel. You can read more about bash wildcards if you want to know mroe advanced usages, but here is an example of how it can be used:
+would load all MLP models whose name start with myModel. You can read more about bash wildcards if you want to know more advanced usages, but here is an example of how it can be used:
 
 6. python main.py ourModels/MLP/CW_diffEpochs_[3-6][0-9]\*#[3-9]\*
 
@@ -62,6 +62,30 @@ If you are having trouble with running the program then there is a diagnostics s
 
 The diagnostic tool does not interact well with pipes* so if you want to send diagnostics info to someone you should copy the output from the terminal window.
 
-
-
 *probably due to the fact that the script creates subprocesses which apparently do no automatically pipe their stdout to the same stdout as the python process that started them.
+
+
+********************************************************************
+
+Licensce:
+DLSCA - a tool for Deep Learning Side Channel Analysis
+
+Copyright (c) 2019 Martin Brisfors, Sebastian Forsmark
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
