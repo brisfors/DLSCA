@@ -157,10 +157,10 @@ def process(cwFiles):
 def labelMaker(cwFiles):
 	global labels
 	for file in cwFiles:
-		if keylistPattern.match(file):
+		if fnmatch.fnmatch(file, '*keylist.npy'):
 			keylist = np.load(file)
 
-		elif textinPattern.match(file):
+		if fnmatch.fnmatch(file, '*textin.npy'):
 			textin = np.load(file)
 	
 	#Use the textin and the keylist to calculate the Sbox outputs for each set and place them into labels.
