@@ -173,9 +173,7 @@ def labelMaker(cwFiles):
 def keyAndPlaintextAppender(keylist, textin):
 	global keys
 	global plainTexts
-	if keylist.shape == (16,): #If they are single keys rather than a list of keys they need to be reshaped for append
-		keylist = np.reshape(keylist,(-1, 16))
-		textin = np.reshape(textin,(-1, 16))
+
 	keys = np.append(keys, keylist, axis=0)
 	plainTexts = np.append(plainTexts, textin, axis=0)
 
