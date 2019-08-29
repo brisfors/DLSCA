@@ -1,0 +1,10 @@
+[Trace Management]
+tracefile0 = leia\traces\leia.cfg
+enabled0 = True
+[ChipWhisperer]
+[[General Settings]]
+Project Name = Leia
+Program Name = ChipWhisperer
+Project File Version = 1.00
+Project Author = Unknown
+Program Version = V3.0
