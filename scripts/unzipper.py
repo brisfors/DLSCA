@@ -173,6 +173,8 @@ def labelMaker(cwFiles):
 def keyAndPlaintextAppender(keylist, textin):
 	global keys
 	global plainTexts
+	keylist = np.atleast_2d(keylist)
+	textin = np.atleast_2d(textin)
 
 	keys = np.append(keys, keylist, axis=0)
 	plainTexts = np.append(plainTexts, textin, axis=0)
