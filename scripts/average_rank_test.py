@@ -169,7 +169,7 @@ for (m) in to_check_all:
 
 try:
 	print("results stored in the ./results folder")
-        input("Test Finished, press enter to continue ...")
+	input("Test Finished, press enter to continue ...")
 except SyntaxError:
-        pass
+	pass
 
