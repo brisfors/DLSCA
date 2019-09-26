@@ -1,8 +1,12 @@
 # DLSCA
 
-This repository is a work in progress. It is intended to be a GUI interface for some scripts used for research.
-I am making it public so it will be easier to share with my coworkers, who are the reason I am making this more 
-user friendly version of otherwise quite arcane scripts.
+This repository is an open source tool for deep learning side channel attacks. It is intended to be a GUI interface for some scripts used for research. 
+
+It was designed to be modular, and you are free to change the code to suit your specific SCA needs. The provided scripts were designed with 128-bit AES attacks on microcontrollers using an MLP neural net in mind. It is not difficult to implement other functionality, however, such as attacking FPGA implementations of AES, using other neural net architectures, or attacking physical unclonable functions. Some of this functionality may be added to the base version of the tool in the future.
+
+The repository has been made public in conjunction with the publication of the technical report that introduces the tool. The technical report can be found here:
+https://eprint.iacr.org/2019/1071
+It contains an experiment that is intended to be easy to replicate yet non-trivial. To my knowledge this is the first published report about SCA utilizing deep learning on an electromagnetic side channel. Electromagnetic SCA has been done in the past, and deep learning SCA on power consumption has been done in the past, but I have not found any EM DL SCA reports published prior to this.
 
 The software has been tested for debian linux distros, so the installation instructions may differ if you are running something else. It also seems to work on Windows with conda installed.
 
