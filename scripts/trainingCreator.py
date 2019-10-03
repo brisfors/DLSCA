@@ -153,7 +153,7 @@ def train_model(traces, labels, model, save_file_name, epochs=150, batch_size=10
 start = time.time()
 model_folder = "ourModels/"
 
-# Load the profiling traces in the ASCAD database with no desync
+# Load the traces and labels to be used for training
 (traces, labels) = load_traces()
 
 ### MLP training
