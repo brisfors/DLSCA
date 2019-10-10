@@ -11,10 +11,11 @@ if len(sys.argv) > 1:
 plotlist = []
 
 for name in namelist:
-  plotlist.insert(0, np.load(name, allow_pickle=True)['arr_0'].item()['val_acc'])
-  plotlist.insert(0, np.load(name, allow_pickle=True)['arr_0'].item()['acc'])
+  temp = np.load(name, allow_pickle=True)
+  plotlist.insert(0, temp['arr_0'].item()['val_acc'])
+  plotlist.insert(0, temp['arr_0'].item()['acc'])
 
-for i in range(0, len(namelist), 2):
+for i in range(0, len(plotlist), 2):
   plt.xlabel('epoch')
   plt.ylabel('val_acc/accuracy')
   filename =re.search('([^/\s]+)([\s]?)+$', namelist[int(i/2)]).group(1)
