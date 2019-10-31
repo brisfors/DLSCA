@@ -9,37 +9,58 @@ if len(sys.argv) != 3:
 input_dir = sys.argv[1]
 output_prefix = sys.argv[2]
 
-# the endings of the input and output files, the order matters
-input_suffixes = ['_traces.npy', '_keylist.npy', '_textin.npy']
-output_suffixes = ['_traces.npy', '_keys.npy', '_plaintexts.npy']
+# type name, input and output prefixes of the different types of series
+suffixes = [
+            ('traces', '_traces.npy', '_traces.npy'),
+            ('keys', '_keylist.npy', '_keys.npy'),
+            ('plaintexts', '_textin.npy', '_plaintexts.npy')
+           ]
 
-files = []
-for i, suffix in enumerate(input_suffixes):
-    files.insert(i, glob.glob(os.path.join(input_dir, '*' + suffix)))
-    files[i].sort()
+tracefiles = glob.glob(os.path.join(input_dir, '*' + suffixes[0][1]))
+tracefiles.sort()
 
-if len(files[0]) == 0:
+if len(tracefiles) == 0:
     sys.exit('No traces found in ' + input_dir)
-#if os.path.exists(output_file):
-    #sys.exit(output_file + ' exists')
-#if os.access(output_file, os.W_OK):
-    #sys.exit(output_file + ' is not writable')
+
+for suffix in suffixes:
+    f = output_prefix + suffix[2]
+    if os.path.exists(f):
+        sys.exit(f + ' exists')
+    if os.access(f, os.W_OK):
+        sys.exit(f + ' is not writable')
 
 # verify that every trace has a key and pt file
-for tracef in files[0]:
-    basename = tracef[:-len(input_suffixes[0])]
-    if not os.path.exists(basename + input_suffixes[1]):
-        sys.exit(basename + ' is missing a keylist')
-    if not os.path.exists(basename + input_suffixes[2]):
-        sys.exit(basename + ' is missing a textin')
+i = len(tracefiles) - 1
+while i != 0:
+    basename = tracefiles[i][:-len(suffixes[0][1])]
+    if not os.path.exists(basename + suffixes[1][1]):
+        print(basename + ' is missing a keylist, skipping')
+        tracefiles.pop(i)
+    elif not os.path.exists(basename + suffixes[2][1]):
+        print(basename + ' is missing a plaintext, skipping')
+        tracefiles.pop(i)
+    i -= 1
 
-# appending to a list is much faster than to a numpy array
-for i, suffix in enumerate(output_suffixes):
-    output = [], []
-    for f in files[i]:
-        series[:] = np.load(os.path.join(input_dir, f)).flatten()
+# concatenate types (traces, keys, pt) subsequently to save memory
+for suffix in suffixes:
+    (tname, isuf, osuf) = suffix
+
+    # appending to a list is much faster than to a numpy array
+    output, series = [], []
+    for i, tf in enumerate(tracefiles):
+        print('Appending ' + tname + ':{: .0%}'.format(i / (len(tracefiles) - 1)), end='\r')
+
+        # adjust trace filename to current type
+        f = tf[:-len(suffixes[0][1])] + isuf
+
+        try:
+            series[:] = np.load(f).flatten()
+        except ValueError:
+            sys.exit('Cannot load numpy array from file ' + f)
         output.append(series)
+    print()
+
     output = np.array(output)
-    print(output.shape)
-    np.save(output_prefix + suffix, output)
+    assert output.shape[0] == len(tracefiles), 'Output shape looks wrong'
+    np.save(output_prefix + osuf, output)
     gc.collect()
